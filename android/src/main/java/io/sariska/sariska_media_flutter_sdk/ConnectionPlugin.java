@@ -2,9 +2,7 @@ package io.sariska.sariska_media_flutter_sdk;
 
 import android.os.Handler;
 import android.os.Looper;
-
 import androidx.annotation.NonNull;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +34,6 @@ public class ConnectionPlugin implements MethodChannel.MethodCallHandler, EventC
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink event) {
-        System.out.println("Listenring to events: ");
         eventSink = event;
     }
 

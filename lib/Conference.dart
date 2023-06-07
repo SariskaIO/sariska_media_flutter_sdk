@@ -38,7 +38,7 @@ class Conference {
   static var localTracks = <JitsiLocalTrack>[];
   static var participants = <Participant>[];
   static const MethodChannel _methodChannel = MethodChannel('conference');
-  static const EventChannel _eventChannel = EventChannel('conference/events');
+  static const EventChannel _eventChannel = EventChannel('conferencevent');
   static String userId = '';
   static String role = '';
   static bool hidden = false;
@@ -49,10 +49,8 @@ class Conference {
 
   Conference() {
     _invokeMethod('createConference');
-  }
-
-  Conference._() {
     _eventChannel.receiveBroadcastStream().listen((event) {
+      print("Event Channel invoked");
       final eventMap = Map<String, dynamic>.from(event);
       final action = eventMap['action'] as String;
       final m = Map<String, dynamic>.from(eventMap['m']);
@@ -393,6 +391,10 @@ class Conference {
 
   void addEventListener(String event, dynamic callback) {
     _bindings.add(new ConferenceBinding(event, callback));
+    Map<String, dynamic> arguments = {
+      'event': event,
+    };
+    _invokeMethod('addConferenceListeners', arguments);
   }
 
   void removeEventListener(event) {

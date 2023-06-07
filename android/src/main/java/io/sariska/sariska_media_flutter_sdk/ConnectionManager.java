@@ -1,6 +1,4 @@
 package io.sariska.sariska_media_flutter_sdk;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +8,6 @@ import java.util.Map;
 import io.sariska.sdk.Conference;
 import io.sariska.sdk.Connection;
 import io.sariska.sdk.ConnectionBinding;
-import io.sariska.sdk.ConnectionCallback;
 
 public class ConnectionManager extends Connection {
 
@@ -34,25 +31,22 @@ public class ConnectionManager extends Connection {
     }
 
     private void createConference() {
-
         conference =  connection.initJitsiConference();
+
         conference.addEventListener("CONFERENCE_JOINED", () -> {
             System.out.println("Conference Joined");
         });
+
         conference.join();
         System.out.println("Conference Joined passed");
     }
 
-    public void addListener(HashMap<String, Object> event) {
+    public void addConnectionListeners(HashMap<String, Object> event) {
         System.out.println("What is this?");
         System.out.println((String) event.get("event"));
-        if(((String) event.get("event")).equals("CONNECTION_ESTABLISHED")){
-            connection.addEventListener("CONNECTION_ESTABLISHED", this::createConference);
-        }else{
             connection.addEventListener((String) event.get("event"), ()->{
                 emit.emit((String) event.get("event"));
             });
-        }
     }
 
     public void destroy() {

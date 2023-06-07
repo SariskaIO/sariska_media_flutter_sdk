@@ -99,7 +99,7 @@ class Connection{
     Map<String, dynamic> arguments = {
       'event': event,
     };
-    _invokeMethod('addListener', arguments);
+    _invokeMethod('addConnectionListeners', arguments);
   }
 
   void removeEventListener(event) {

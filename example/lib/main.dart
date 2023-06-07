@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
@@ -28,6 +29,8 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
+
+
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     String platformVersion;
@@ -45,7 +48,14 @@ class _MyAppState extends State<MyApp> {
       final _connection = Connection(token, "dipak", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
-        print('Connectiosssn Established');
+        print("objective");
+        Conference _conference = _connection.initJitsiConference();
+
+        _conference.addEventListener("TRACK_ADDED", (track){
+          print("adding track");
+        });
+
+        _conference.join();
       });
       
       _connection.addEventListener("CONNECTION_FAILED", () {
@@ -71,6 +81,7 @@ class _MyAppState extends State<MyApp> {
       _platformVersion = platformVersion;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
