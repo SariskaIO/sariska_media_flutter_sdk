@@ -68,13 +68,6 @@ class Conference {
               (_bindings[i].getCallback() as ConferenceCallbackParam0)();
               break;
             case "CONFERENCE_JOINED":
-              userId = m["userId"];
-              role = m["role"];
-              hidden = m["hidden"];
-              dtmf = m["dtmf"];
-              name = m["name"];
-              email = m["email"];
-              avatar = m["avatar"];
               (_bindings[i].getCallback() as ConferenceCallbackParam0)();
               break;
             case "LOCAL_STATS_UPDATED":

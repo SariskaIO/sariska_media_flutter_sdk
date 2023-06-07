@@ -51,24 +51,6 @@ class Connection{
     });
   }
 
-  Connection._(){
-    _eventChannel.receiveBroadcastStream().listen((event) {
-      print('Received Broadcast Stream');
-      final eventMap = Map<String, dynamic>.from(event);
-      final action = eventMap['action'] as String;
-      for (var i = 0; i < _bindings.length; i++) {
-        if (_bindings[i].getEvent() == action) {
-          switch (action) {
-            case "CONNECTION_ESTABLISHED":
-            case "CONNECTION_FAILED":
-            case "CONNECTION_DISCONNECTED":
-              _bindings[i].getCallback()();
-          }
-        }
-      }
-    });
-  }
-
   static Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
     return _methodChannel.invokeMethod(method, arguments);
   }

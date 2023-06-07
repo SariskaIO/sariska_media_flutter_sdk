@@ -48,8 +48,11 @@ class _MyAppState extends State<MyApp> {
       final _connection = Connection(token, "dipak", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
-        print("objective");
         Conference _conference = _connection.initJitsiConference();
+
+        _conference.addEventListener("CONFERENCE_JOINED", (){
+          print("Conference Joined");
+        });
 
         _conference.addEventListener("TRACK_ADDED", (track){
           print("adding track");

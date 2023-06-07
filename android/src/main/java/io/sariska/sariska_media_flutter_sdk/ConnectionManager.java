@@ -42,7 +42,6 @@ public class ConnectionManager extends Connection {
     }
 
     public void addConnectionListeners(HashMap<String, Object> event) {
-        System.out.println("What is this?");
         System.out.println((String) event.get("event"));
             connection.addEventListener((String) event.get("event"), ()->{
                 emit.emit((String) event.get("event"));

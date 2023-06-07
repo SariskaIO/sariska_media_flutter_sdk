@@ -188,24 +188,62 @@ public class ConferenceManager extends Conference {
     }
 
     public void addConferenceListeners(HashMap<String, Object> event) {
-
-
-        conference.addEventListener((String) event.get("event"), (p) -> {
-            System.out.println("Inside ");
-            JitsiRemoteTrack track = (JitsiRemoteTrack) p;
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", ((JitsiRemoteTrack) p).getType());
-            map.put("participantId", ((JitsiRemoteTrack) p).getParticipantId());
-            map.put("id", ((JitsiRemoteTrack) p).getId());
-            map.put("muted",((JitsiRemoteTrack) p).isMuted());
-            map.put("streamURL", ((JitsiRemoteTrack) p).getStreamURL());
-            emit.emit((String) event.get("event"), map);
-        });
+        String eventString = (String) event.get("event");
+        switch (eventString) {
+            case "CONFERENCE_JOINED":
+                // Handle conference joined event
+                Map<String, Object> map = new HashMap<>();
+                System.out.println("USer ID: " + conference.getUserId());
+                map.put("userId", conference.getUserId());
+                map.put("role", conference.getUserRole());
+                map.put("hidden", conference.isHidden());
+                map.put("dtmf", conference.isDTMFSupported());
+                map.put("name", conference.getUserName());
+                map.put("email", conference.getUserEmail());
+                map.put("avatar", conference.getUserAvatar());
+                conference.addEventListener(eventString, ()->{
+                    emit.emit(eventString, map);
+            });
+                break;
+            case "DOMINANT_SPEAKER_CHANGED":
+                // Handle dominant speaker changed event
+                break;
+            case "TRACK_ADDED":
+                // Handle track added event
+                conference.addEventListener(eventString, (p) -> {
+                    System.out.println("Inside ");
+                    JitsiRemoteTrack track = (JitsiRemoteTrack) p;
+                    Map<String, Object> trackMap = new HashMap<>();
+                    trackMap.put("type", ((JitsiRemoteTrack) p).getType());
+                    trackMap.put("participantId", ((JitsiRemoteTrack) p).getParticipantId());
+                    trackMap.put("id", ((JitsiRemoteTrack) p).getId());
+                    trackMap.put("muted",((JitsiRemoteTrack) p).isMuted());
+                    trackMap.put("streamURL", ((JitsiRemoteTrack) p).getStreamURL());
+                    emit.emit((String) event.get("event"), trackMap);
+                });
+                break;
+            case "TRACK_REMOVED":
+                // Handle track removed event
+                break;
+            case "USER_JOINED":
+                // Handle user joined event
+                break;
+            case "USER_LEFT":
+                // Handle user left event
+                break;
+            case "CONFERENCE_LEFT":
+                // Handle conference left event
+                break;
+            default:
+                // Handle unknown event
+                break;
+        }
     }
 
 
     @Override
     public void newConferenceMessage(String action, ReadableMap m) {
+        System.out.println("New Conference Message");
         if (action != null) {
             emit.emit(action, m != null ? Utils.toMap(m) : null);
         }
