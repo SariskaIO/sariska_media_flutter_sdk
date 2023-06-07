@@ -17,7 +17,6 @@ class JitsiLocalTrack {
 
   static const MethodChannel _methodChannel = MethodChannel('track');
 
-
   JitsiLocalTrack(Map<String, dynamic> map) {
     this.type = map['type'];
     this.participantId = map['participantId'];

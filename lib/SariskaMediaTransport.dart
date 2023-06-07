@@ -1,7 +1,12 @@
 
+import 'JitsiLocalTrack.dart';
 import 'SariskaMediaTransportInterface.dart';
+typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
 class SariskaMediaTransport {
+
+  static late LocalTrackCallback localTrackCallback;
+
   Future<String?> getPlatformVersion() {
     return SariskaMediaTransportInterface.instance.getPlatformVersion();
   }
@@ -10,8 +15,8 @@ class SariskaMediaTransport {
     SariskaMediaTransportInterface.instance.initializeSdk();
   }
 
-  void createLocalTracks(Map<String, dynamic> options){
-    SariskaMediaTransportInterface.instance.createLocalTracks(options);
-  }
 
+  void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback){
+    SariskaMediaTransportInterface.instance.createLocalTracks(options, callback);
+  }
 }

@@ -5,7 +5,6 @@ import io.sariska.sdk.Conference;
 import io.sariska.sdk.JitsiLocalTrack;
 import io.sariska.sdk.JitsiRemoteTrack;
 import io.sariska.sdk.Utils;
-
 import java.util.HashMap;
 import java.util.Map;
 

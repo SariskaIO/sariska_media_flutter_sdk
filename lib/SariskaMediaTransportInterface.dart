@@ -1,5 +1,7 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'JitsiLocalTrack.dart';
 import 'SariskaMediaTransportMethodChannel.dart';
+typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
 abstract class SariskaMediaTransportInterface extends PlatformInterface {
   /// Constructs a SariskaMediaFlutterSdkPlatform.
@@ -30,7 +32,7 @@ abstract class SariskaMediaTransportInterface extends PlatformInterface {
     throw UnimplementedError('initializeSdk() has not been implemented.');
   }
 
-  void createLocalTracks(Map<String, dynamic> options){
+  void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback){
     throw UnimplementedError('createLocalTracks(Map<String, dynamic> options) has not been implemented.');
   }
 

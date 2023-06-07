@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
+import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
+
+typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
 void main() {
   runApp(const MyApp());
@@ -15,6 +18,8 @@ class MyApp extends StatefulWidget {
 
   @override
   State<MyApp> createState() => _MyAppState();
+
+  static late LocalTrackCallback localTrackCallback;
 }
 
 class _MyAppState extends State<MyApp> {
@@ -43,6 +48,8 @@ class _MyAppState extends State<MyApp> {
 
       // Initialize Sariska Media Tranasport
       _sariskaMediaTransport.initializeSdk();
+
+      setupLocalStream();
 
       //Create Connection
       final _connection = Connection(token, "dipak", false);
@@ -85,6 +92,14 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void setupLocalStream(){
+    Map<String, dynamic> options = new Map();
+    options["audio"] = true;
+    options["video"] = true;
+    _sariskaMediaTransport.createLocalTracks(options, (tracks){
+      print("Inside Create Local Tracks");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
