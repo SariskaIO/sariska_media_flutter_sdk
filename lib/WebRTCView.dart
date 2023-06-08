@@ -32,7 +32,7 @@ class WebRTCView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _RtcSurfaceViewState();
+    return _RtcSurfaceViewState(streamURL);
   }
 }
 
@@ -42,6 +42,8 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
   bool? _mirror;
   String? _objectFit;
   int? _zOrder;
+
+  _RtcSurfaceViewState(this._streamURL);
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +134,7 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
   Future<void> onPlatformViewCreated(int id) async {
     _id = id;
     if (!_channels.containsKey(id)) {
-      _channels[id] = MethodChannel('sariska_media_transport/surface_view_$id');
+      _channels[id] = MethodChannel('sariska_media_transport_surface_view_$id');
     }
     widget.onPlatformViewCreated?.call(id);
   }

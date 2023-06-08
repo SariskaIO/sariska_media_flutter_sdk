@@ -5,6 +5,7 @@ import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
+import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
 
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
@@ -26,6 +27,7 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   final _sariskaMediaTransport = SariskaMediaTransport();
   String token = 'unknown';
+  String streamURL = '';
 
 
   @override
@@ -39,6 +41,7 @@ class _MyAppState extends State<MyApp> {
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     String platformVersion;
+
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
@@ -96,10 +99,22 @@ class _MyAppState extends State<MyApp> {
     Map<String, dynamic> options = new Map();
     options["audio"] = true;
     options["video"] = true;
+
+    List<JitsiLocalTrack> localtracks = [];
     _sariskaMediaTransport.createLocalTracks(options, (tracks){
       print("Inside Create Local Tracks");
+      localtracks = tracks;
+      for(JitsiLocalTrack track in localtracks){
+        if(track.getType() == "video"){
+          streamURL = track.getStreamURL();
+          replaceChild(streamURL);
+          print("Stream URL = "+ streamURL);
+        }
+      }
     });
   }
+
+  Widget _currentChild = PlaceholderWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +123,57 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+        body: _currentChild,
+        // Center(
+        //   child: Container(
+        //     width: 300,
+        //     height: 200,
+        //     child: buildWebRTCView(),
+        //   ),
+        // ),
       ),
     );
   }
+
+
+  void replaceChild(String streamUrl) {
+    setState(() {
+      _currentChild = UpdatedChildWidget(streamUrl: streamURL);
+    });
+  }
+
+
+
 }
+class PlaceholderWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Placeholder Widget'),
+    );
+  }
+}
+
+class UpdatedChildWidget extends StatelessWidget {
+  final String streamUrl;
+  const UpdatedChildWidget({required this.streamUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+          width: 300,
+          height: 200,
+          child: buildWebRTCView(),
+        ),
+    );
+  }
+  WebRTCView buildWebRTCView() {
+    return WebRTCView(
+      streamURL: streamUrl,
+      mirror: true,
+      objectFit: 'cover',
+    );
+  }
+}
+

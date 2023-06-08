@@ -15,7 +15,6 @@ class SariskaMediaTransport {
     SariskaMediaTransportInterface.instance.initializeSdk();
   }
 
-
   void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback){
     SariskaMediaTransportInterface.instance.createLocalTracks(options, callback);
   }

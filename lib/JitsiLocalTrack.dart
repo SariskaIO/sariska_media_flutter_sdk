@@ -75,4 +75,5 @@ class JitsiLocalTrack {
   void dispose() {
     _invokeMethod("dispose", {'trackId': this.getId()});
   }
+
 }

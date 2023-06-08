@@ -13,15 +13,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.sariska.sdk.JitsiLocalTrack;
 import io.sariska.sdk.SariskaMediaTransport;
-
+import io.flutter.plugin.platform.PlatformViewRegistry;
 /** SariskaMediaTransportPlugin */
 public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHandler , EventChannel.StreamHandler{
   /// The MethodChannel that will the communication between Flutter and native Android
@@ -45,7 +47,15 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     applicationContext = flutterPluginBinding.getApplicationContext();
     connectionPlugin = new ConnectionPlugin(flutterPluginBinding.getBinaryMessenger());
     conferencePlugin = new ConferencePlugin(flutterPluginBinding.getBinaryMessenger());
+
+    FlutterEngine flutterEngine = flutterPluginBinding.getFlutterEngine();
+    PlatformViewRegistry registry = flutterEngine.getPlatformViewsController().getRegistry();
+    registry.registerViewFactory(
+            "SariskaSurfaceView",
+            new SariskaSurfaceViewFactory(flutterPluginBinding.getBinaryMessenger())
+    );
   }
+
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
