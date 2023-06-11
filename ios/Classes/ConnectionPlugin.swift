@@ -17,8 +17,6 @@ public class ConnectionPlugin: NSObject, FlutterPlugin{
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        var manager: ConnectionManager?
-
         if let params = call.arguments as? NSDictionary {
             let selector = NSSelectorFromString(call.method + "::")
 //            if manager.responds(to: selector) {

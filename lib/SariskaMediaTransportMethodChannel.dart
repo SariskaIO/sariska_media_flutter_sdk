@@ -9,7 +9,7 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
   List<JitsiLocalTrack> localTracks = [];
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  static const methodChannel = const MethodChannel('sariska_media_flutter_sdk');
+  static const methodChannel = const MethodChannel('sariska_media_transport_flutter');
   static const eventChannel = const EventChannel('sariskaMediaTransportEvent');
 
   @override
