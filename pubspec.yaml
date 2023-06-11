@@ -38,7 +38,7 @@ flutter:
         package: io.sariska.sariska_media_flutter_sdk
         pluginClass: SariskaMediaTransportPlugin
       ios:
-        pluginClass: SariskaMediaTransportPlugin
+        pluginClass: SariskaMediaTransportFlutterPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
