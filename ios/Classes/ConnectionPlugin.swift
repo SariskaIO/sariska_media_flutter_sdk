@@ -8,9 +8,19 @@
 import Foundation
 import Flutter
 
-public class ConnectionPlugin: NSObject, FlutterPlugin{
-
+public class ConnectionPlugin: NSObject, FlutterPlugin, FlutterStreamHandler{
     var manager: ConnectionManager?
+    private var eventSink: FlutterEventSink? = nil
+
+    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        eventSink = events
+        return nil
+    }
+
+    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        eventSink = nil
+        return nil
+    }
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(name: "connection", binaryMessenger: registrar.messenger())
@@ -20,9 +30,12 @@ public class ConnectionPlugin: NSObject, FlutterPlugin{
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if(manager == nil){
-            manager = ConnectionManager()
+        if(manager == nil) {
+            manager = ConnectionManager() { [weak self] action, m in
+                self?.emit(action, m)
+            }
         }
+
         switch call.method {
         case "createConnection":
             if let arguments = call.arguments as? [String: Any] {
@@ -40,9 +53,19 @@ public class ConnectionPlugin: NSObject, FlutterPlugin{
             } else {
                 result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
             }
-
         default:
             result(FlutterMethodNotImplemented)
         }
     }
+
+    private func emit(_ action: String, _ m: Dictionary<String, Any?>?) {
+        var event: Dictionary<String, Any?> = ["action": action]
+        if let `m` = m {
+            event.merge(m) { (current, _) in
+                current
+            }
+        }
+        eventSink?(event)
+    }
+
 }
