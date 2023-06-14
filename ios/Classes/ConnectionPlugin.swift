@@ -24,8 +24,10 @@ public class ConnectionPlugin: NSObject, FlutterPlugin, FlutterStreamHandler{
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(name: "connection", binaryMessenger: registrar.messenger())
+        let eventChannel = FlutterEventChannel(name: "connectionevent", binaryMessenger: registrar.messenger())
         let instance = ConnectionPlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
+        eventChannel.setStreamHandler(instance)
         print("Inside Connection Plugin")
     }
 
@@ -59,6 +61,8 @@ public class ConnectionPlugin: NSObject, FlutterPlugin, FlutterStreamHandler{
     }
 
     private func emit(_ action: String, _ m: Dictionary<String, Any?>?) {
+        print(action)
+        print(m)
         var event: Dictionary<String, Any?> = ["action": action]
         if let `m` = m {
             event.merge(m) { (current, _) in

@@ -387,7 +387,7 @@ class Conference {
     Map<String, dynamic> arguments = {
       'event': event,
     };
-    _invokeMethod('addConferenceListeners', arguments);
+    _invokeMethod('addEventListeners', arguments);
   }
 
   void removeEventListener(event) {

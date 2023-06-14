@@ -4,11 +4,13 @@ import sariska
 
 public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin {
     private var connectionPlugin: ConnectionPlugin?
+    private var conferencePlugin: ConferencePlugin?
     
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "sariska_media_transport_flutter", binaryMessenger: registrar.messenger())
     let instance = SariskaMediaTransportFlutterPlugin()
       ConnectionPlugin.register(with: registrar)
+      ConferencePlugin.register(with: registrar)
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 

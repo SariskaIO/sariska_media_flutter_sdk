@@ -32,8 +32,9 @@ class ConnectionManager: NSObject {
     }
 
     func addEventListener(_ dictionary: [String: Any]){
-        connection?.addEventListener(dictionary["event"] as! String, callback: {
+        connection?.addEventListener(dictionary["event"] as! String, callback: { [self] in
             print("Connection Established")
+            emitter(dictionary["event"] as! String, dictionary)
         })
     }
 }

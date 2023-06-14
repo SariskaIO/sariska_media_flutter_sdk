@@ -186,7 +186,7 @@ public class ConferenceManager extends Conference {
         conference.leave();
     }
 
-    public void addConferenceListeners(HashMap<String, Object> event) {
+    public void addEventListeners(HashMap<String, Object> event) {
         String eventString = (String) event.get("event");
         switch (eventString) {
             case "CONFERENCE_JOINED":
