@@ -52,8 +52,12 @@ class Conference {
     _eventChannel.receiveBroadcastStream().listen((event) {
       print("Event Channel invoked");
       final eventMap = Map<String, dynamic>.from(event);
+      print(eventMap);
       final action = eventMap['action'] as String;
+      print("Action: " + action);
       final m = Map<String, dynamic>.from(eventMap['m']);
+      print("m: {0}");
+      print(m);
       for (var i = 0; i < _bindings.length; i++) {
         if (_bindings[i].getEvent() == action) {
           switch (action) {

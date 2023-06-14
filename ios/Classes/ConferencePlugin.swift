@@ -57,14 +57,11 @@ public class ConferencePlugin:  NSObject, FlutterPlugin, FlutterStreamHandler{
     }
 
     private func emit(_ action: String, _ m: Dictionary<String, Any?>?) {
+        print("Action and m")
         print(action)
         print(m)
-        var event: Dictionary<String, Any?> = ["action": action]
-        if let `m` = m {
-            event.merge(m) { (current, _) in
-                current
-            }
-        }
+        var event: Dictionary<String, Any?> =
+                ["action": action, "m": m as! String]
         eventSink?(event)
     }
 }

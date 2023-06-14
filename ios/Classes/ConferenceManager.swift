@@ -102,17 +102,15 @@ public class ConferenceManager : Conference{
 
     func addEventListeners(_ dictionary: [String: Any]){
         var eventString = dictionary["event"] as! String
-
         switch(eventString){
-
         case "CONFERENCE_JOINED":
-            conference?.addEventListener(eventString, callback0: {
-                print("Conference Joined")
+            conference?.addEventListener(eventString, callback0: { [self] in
+                emitter(dictionary["event"] as! String, dictionary)
             })
+
         default:
             print("Event Listener Not Implemented")
         }
-
     }
 
 }
