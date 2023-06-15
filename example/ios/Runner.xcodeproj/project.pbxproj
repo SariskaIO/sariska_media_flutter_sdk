@@ -104,6 +104,13 @@
 			path = RunnerTests;
 			sourceTree = "<group>";
 		};
+		6A4724992A3B05C50078E510 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -124,6 +131,7 @@
 				331C8082294A63A400263BE5 /* RunnerTests */,
 				FEC6B17470CCF8FD7FD20F43 /* Pods */,
 				0E5E3334CB560BE7E69C4DC1 /* Frameworks */,
+				6A4724992A3B05C50078E510 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -161,7 +169,6 @@
 				DE531132FEB7EE2333B598CD /* Pods-RunnerTests.release.xcconfig */,
 				E3E667DFAED4FDF52A7DD89B /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
         Conference _conference = _connection.initJitsiConference();
 
         _conference.addEventListener("CONFERENCE_JOINED", (){
-          print("Conference Joined 14Jun");
+          print("Conference joined from Swift and Android");
         });
 
         _conference.addEventListener("TRACK_ADDED", (track){

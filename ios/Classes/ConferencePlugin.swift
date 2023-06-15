@@ -18,6 +18,7 @@ public class ConferencePlugin:  NSObject, FlutterPlugin, FlutterStreamHandler{
         let instance = ConferencePlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
         eventChannel.setStreamHandler(instance)
+        registrar.register(SariskaSurfaceViewFactory(registrar.messenger()), withId: "SariskaSurfaceView")
     }
 
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
@@ -57,11 +58,9 @@ public class ConferencePlugin:  NSObject, FlutterPlugin, FlutterStreamHandler{
     }
 
     private func emit(_ action: String, _ m: Dictionary<String, Any?>?) {
-        print("Action and m")
-        print(action)
-        print(m)
         var event: Dictionary<String, Any?> =
-                ["action": action, "m": m as! String]
+                ["action": action]
+        event["m"] = m
         eventSink?(event)
     }
 }
