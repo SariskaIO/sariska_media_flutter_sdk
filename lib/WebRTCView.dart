@@ -4,12 +4,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
+import 'package:sariska_media_flutter_sdk/Track.dart';
 
 final Map<int, MethodChannel> _channels = {};
 
 class WebRTCView extends StatefulWidget {
 
-  final JitsiLocalTrack localTrack;
+  final Track localTrack;
 
   final bool mirror;
 
@@ -38,7 +39,7 @@ class WebRTCView extends StatefulWidget {
 }
 
 class _RtcSurfaceViewState extends State<WebRTCView> {
-  JitsiLocalTrack? track;
+  Track? track;
   int? _id;
   String? _streamURL;
   bool? _mirror;
@@ -57,7 +58,7 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
           onPlatformViewCreated: onPlatformViewCreated,
           hitTestBehavior: PlatformViewHitTestBehavior.opaque,
           creationParams: {
-            'streamURL': _streamURL,
+            'streamURL': track?.getStreamURL(),
             'mirror': _mirror,
             'objectFit': _objectFit,
             'zOrder': _zOrder
@@ -72,14 +73,6 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
         child: UiKitView(
           viewType: 'SariskaSurfaceView',
           onPlatformViewCreated: onPlatformViewCreated,
-          /*
-          trackId = m[@"id"];
-    muted = !!m[@"muted"];
-    type = m[@"type"];
-    streamURL = m[@"streamURL"];
-    deviceId = m[@"deviceId"];
-    participantId = m[@"participantId"];
-           */
           creationParams: {
             'streamURL': track?.getStreamURL(),
             'mirror': _mirror,
@@ -87,8 +80,8 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
             'trackId': track?.getId(),
             'muted': track?.isMuted(),
             'type': track?.getType(),
-            'deviceId': track?.getDeviceId(),
-            'participantId': track?.getParticipantId()
+//            'deviceId': track?.getDeviceId(),
+//            'participantId': track?.getParticipantId()
           },
           creationParamsCodec: const StandardMessageCodec(),
           gestureRecognizers: widget.gestureRecognizers,

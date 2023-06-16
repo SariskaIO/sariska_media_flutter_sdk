@@ -7,6 +7,7 @@ import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
 import 'package:sariska_media_flutter_sdk/JitsiRemoteTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
+import 'package:sariska_media_flutter_sdk/Track.dart';
 import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
 
@@ -74,7 +75,7 @@ class _MyAppState extends State<MyApp> {
             return;
           }
           streamURL = remoteTrack.getStreamURL();
-          //replaceChild(streamURL);
+          replaceChild(remoteTrack);
         });
 
         _conference.join();
@@ -114,8 +115,7 @@ class _MyAppState extends State<MyApp> {
       localtracks = tracks;
       for(JitsiLocalTrack track in localtracks){
         if(track.getType() == "video"){
-          streamURL = track.getStreamURL();
-          replaceChild(track);
+          //replaceChild(track);
         }
       }
     });
@@ -136,7 +136,7 @@ class _MyAppState extends State<MyApp> {
   }
 
 
-  void replaceChild(JitsiLocalTrack localTrack) {
+  void replaceChild(Track localTrack) {
     setState(() {
       _currentChild = UpdatedChildWidget(track: localTrack);
     });
@@ -152,7 +152,7 @@ class PlaceholderWidget extends StatelessWidget {
 }
 
 class UpdatedChildWidget extends StatelessWidget {
-  final JitsiLocalTrack track;
+  final Track track;
   const UpdatedChildWidget({required this.track});
 
   @override
