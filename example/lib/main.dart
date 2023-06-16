@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -114,7 +115,7 @@ class _MyAppState extends State<MyApp> {
       for(JitsiLocalTrack track in localtracks){
         if(track.getType() == "video"){
           streamURL = track.getStreamURL();
-          replaceChild(streamURL);
+          replaceChild(track);
         }
       }
     });
@@ -135,9 +136,9 @@ class _MyAppState extends State<MyApp> {
   }
 
 
-  void replaceChild(String streamUrl) {
+  void replaceChild(JitsiLocalTrack localTrack) {
     setState(() {
-      _currentChild = UpdatedChildWidget(streamUrl: streamURL);
+      _currentChild = UpdatedChildWidget(track: localTrack);
     });
   }
 }
@@ -151,8 +152,8 @@ class PlaceholderWidget extends StatelessWidget {
 }
 
 class UpdatedChildWidget extends StatelessWidget {
-  final String streamUrl;
-  const UpdatedChildWidget({required this.streamUrl});
+  final JitsiLocalTrack track;
+  const UpdatedChildWidget({required this.track});
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +167,7 @@ class UpdatedChildWidget extends StatelessWidget {
   }
   WebRTCView buildWebRTCView() {
     return WebRTCView(
-      streamURL: streamUrl,
+      localTrack: track,
       mirror: true,
       objectFit: 'cover',
     );

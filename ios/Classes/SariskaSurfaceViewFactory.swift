@@ -33,27 +33,22 @@ class SariskaSurfaceViewFactory: NSObject, FlutterPlatformViewFactory {
 
 class SariskaSurfaceView :NSObject, FlutterPlatformView{
     private var _view: RTCVideoView
-    init(
-            frame: CGRect,
-            viewIdentifier viewId: Int64,
-            arguments args: Any?,
-            binaryMessenger messenger: FlutterBinaryMessenger?
-    ) {
+    init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, binaryMessenger messenger: FlutterBinaryMessenger?) {
         _view = RTCVideoView()
+        print("args")
+        print(args)
         super.init()
-        // iOS views can be created here
-        createNativeView(view: _view)
+        let map = args
+        var track = JitsiLocalTrack.init(options: map as! [AnyHashable: Any])
+        createNativeView(view: _view, track: track)
     }
 
     func view() -> UIView {
         return _view
     }
 
-    func createNativeView(view _rapidview: RTCVideoView){
-        if(SariskaMediaTransportFlutterPlugin.localTrack == nil){
-            print("Local track is null");
-        }
-        _view = (SariskaMediaTransportFlutterPlugin.localTrack?.render())!
+    func createNativeView(view _rapidview: RTCVideoView, track: JitsiLocalTrack){
+        _view = track.render()
         _view.accessibilityLabel = SariskaMediaTransportFlutterPlugin.localTrack?.getId()
         _view.heightAnchor.constraint(equalToConstant: 480).isActive = true
         _view.widthAnchor.constraint(equalToConstant: 360).isActive = true
