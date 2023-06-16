@@ -40,7 +40,7 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    methodChannel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "sariska_media_flutter_sdk");
+    methodChannel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "sariska_media_transport_flutter");
     eventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), "sariskaMediaTransportEvent");
     eventChannel.setStreamHandler(this);
     methodChannel.setMethodCallHandler(this);

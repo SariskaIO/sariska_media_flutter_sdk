@@ -31,6 +31,7 @@ public class ConferenceManager : Conference{
 
     public override func join(){
         conference?.join()
+        conference?.addTrack(track: SariskaMediaTransportFlutterPlugin.localTrack ?? JitsiLocalTrack())
     }
 
     func join(_ params: NSDictionary) {
@@ -106,6 +107,21 @@ public class ConferenceManager : Conference{
         case "CONFERENCE_JOINED":
             conference?.addEventListener(eventString, callback0: { [self] in
                 emitter(dictionary["event"] as! String, dictionary)
+            })
+        case "TRACK_ADDED":
+            conference?.addEventListener(eventString, callback1: { [self] track in
+                let sometrack = track as! JitsiRemoteTrack
+                var event = [String:Any]()
+                event["type"] = sometrack.getType()
+                event["participantId"] = sometrack.getParticipantId()
+                event["muted"] = sometrack.isMuted()
+                event["streamURL"] = sometrack.getStreamURL()
+                event["id"] = sometrack.getId()
+                if(sometrack.getStreamURL() == SariskaMediaTransportFlutterPlugin.localTrack?.getStreamURL()){
+                    //do noting
+                }else{
+                    emitter(dictionary["event"] as! String, event)
+                }
             })
 
         default:

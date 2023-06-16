@@ -18,7 +18,6 @@ public class ConferencePlugin:  NSObject, FlutterPlugin, FlutterStreamHandler{
         let instance = ConferencePlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
         eventChannel.setStreamHandler(instance)
-        registrar.register(SariskaSurfaceViewFactory(registrar.messenger()), withId: "SariskaSurfaceView")
     }
 
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {

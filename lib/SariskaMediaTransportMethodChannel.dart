@@ -28,7 +28,9 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
       print('Inside SMT receive broadcast stream');
       //final eventMap = Map<String, dynamic>.from(event);
       final action = event['action'] as String;
+      print(action);
       final m = event['m'] as List<dynamic>;
+      print(m);
       switch (action) {
         case "CREATE_LOCAL_TRACKS":
           localTracks = [];

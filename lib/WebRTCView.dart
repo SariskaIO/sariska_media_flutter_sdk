@@ -53,7 +53,7 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
         child: AndroidView(
           viewType: 'SariskaSurfaceView',
           onPlatformViewCreated: onPlatformViewCreated,
-          hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
           creationParams: {
             'streamURL': _streamURL,
             'mirror': _mirror,
@@ -70,7 +70,6 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
         child: UiKitView(
           viewType: 'SariskaSurfaceView',
           onPlatformViewCreated: onPlatformViewCreated,
-          hitTestBehavior: PlatformViewHitTestBehavior.transparent,
           creationParams: {
             'streamURL': _streamURL,
             'mirror': _mirror,

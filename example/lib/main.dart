@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
             return;
           }
           streamURL = remoteTrack.getStreamURL();
-          replaceChild(streamURL);
+          //replaceChild(streamURL);
         });
 
         _conference.join();
@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
       for(JitsiLocalTrack track in localtracks){
         if(track.getType() == "video"){
           streamURL = track.getStreamURL();
-          //replaceChild(streamURL);
+          replaceChild(streamURL);
         }
       }
     });
@@ -158,8 +158,8 @@ class UpdatedChildWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: 300,
-        height: 200,
+        width: 360,
+        height: 240,
         child: buildWebRTCView(),
       ),
     );

@@ -2,16 +2,32 @@ import Flutter
 import UIKit
 import sariska
 
-public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin {
+public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
+    private var eventSink: FlutterEventSink? = nil
+    public static var localTrack: JitsiLocalTrack? = nil
+
+    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        eventSink = events
+        return nil
+    }
+
+    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        eventSink = nil
+        return nil
+    }
+
     private var connectionPlugin: ConnectionPlugin?
     private var conferencePlugin: ConferencePlugin?
     
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "sariska_media_transport_flutter", binaryMessenger: registrar.messenger())
-    let instance = SariskaMediaTransportFlutterPlugin()
+      let channel = FlutterMethodChannel(name: "sariska_media_transport_flutter", binaryMessenger: registrar.messenger())
+      let eventChannel = FlutterEventChannel(name: "sariskaMediaTransportEvent", binaryMessenger: registrar.messenger())
+      let instance = SariskaMediaTransportFlutterPlugin()
       ConnectionPlugin.register(with: registrar)
       ConferencePlugin.register(with: registrar)
-    registrar.addMethodCallDelegate(instance, channel: channel)
+      eventChannel.setStreamHandler(instance)
+      registrar.addMethodCallDelegate(instance, channel: channel)
+      registrar.register(SariskaSurfaceViewFactory(messenger: registrar.messenger()), withId: "SariskaSurfaceView")
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -25,8 +41,27 @@ public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin {
     case "createLocalTracks":
         // Handle the method call and extract the arguments
         if let arguments = call.arguments as? [String: Any] {
-            SariskaMediaTransport.createLocalTracks(arguments) { tracks in
-                print("inside create local tracks")
+            SariskaMediaTransport.createLocalTracks(arguments) { [self] tracks in
+                print("Inside create local")
+                var trackList  = [Any]()
+                for track in (tracks) {
+                    let sometrack = track as! JitsiLocalTrack
+                    if(sometrack.getType() == "video"){
+                        print("video ssss")
+                        SariskaMediaTransportFlutterPlugin.localTrack = track as? JitsiLocalTrack
+                    }
+                        var event = [String:Any]()
+                        event["type"] = sometrack.getType()
+                        event["participantId"] = sometrack.getParticipantId()
+                        print("participantId: ", sometrack.getParticipantId())
+                        event["deviceId"] = sometrack.getDeviceId()
+                        event["muted"] = sometrack.isMuted()
+                        event["streamURL"] = sometrack.getStreamURL()
+                        event["id"] = sometrack.getId()
+                        trackList.append(event)
+                }
+                emit("CREATE_LOCAL_TRACKS", trackList)
+
             }
         } else {
             result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
@@ -36,4 +71,13 @@ public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin {
       result(FlutterMethodNotImplemented)
     }
   }
+
+    private func emit(_ methodName: String, _ data: [Any]?) {
+        var event: Dictionary<String, Any?> =
+                ["action": methodName]
+        print("Event: " , event)
+        event["m"] = data
+        print("Event: " , event)
+        eventSink?(event)
+    }
 }
