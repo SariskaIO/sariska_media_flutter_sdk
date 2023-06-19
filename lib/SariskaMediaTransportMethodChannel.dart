@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'JitsiLocalTrack.dart';
 import 'SariskaMediaTransportInterface.dart';
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
@@ -21,9 +22,7 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
   // Initialize Sariska Media Transport SDK
   @override
   void initializeSdk(){
-
     _invokeMethod('initializeSdk');
-
     eventChannel.receiveBroadcastStream().listen((event) {
       print('Inside SMT receive broadcast stream');
       //final eventMap = Map<String, dynamic>.from(event);
@@ -65,5 +64,14 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
     });
   }
 
+  @override
+  String getName() {
+    return "SariskaMediaTransport";
+  }
+
+  @override
+  Connection jitsiConnection(String token, String roomName, bool isNightly) {
+    return Connection(token, roomName, isNightly);
+  }
 }
 
