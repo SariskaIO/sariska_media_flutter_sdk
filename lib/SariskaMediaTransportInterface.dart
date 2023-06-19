@@ -1,6 +1,8 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'JitsiLocalTrack.dart';
 import 'SariskaMediaTransportMethodChannel.dart';
+
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
 abstract class SariskaMediaTransportInterface extends PlatformInterface {
@@ -12,7 +14,6 @@ abstract class SariskaMediaTransportInterface extends PlatformInterface {
   static SariskaMediaTransportInterface _instance = SariskaMediaTransportMethodChannel();
 
   /// The default instance of [SariskaMediaTransportInterface] to use.
-  ///
   /// Defaults to [SariskaMediaTransportMethodChannel].
   static SariskaMediaTransportInterface get instance => _instance;
 
@@ -34,6 +35,14 @@ abstract class SariskaMediaTransportInterface extends PlatformInterface {
 
   void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback){
     throw UnimplementedError('createLocalTracks(Map<String, dynamic> options) has not been implemented.');
+  }
+
+  Connection jitsiConnection(String token, String roomName, bool isNightly){
+    throw UnimplementedError('jitsiConnection() has not been implemented.');
+  }
+
+  String getName(){
+    throw UnimplementedError('getName() has not been implemented.');
   }
 
 }
