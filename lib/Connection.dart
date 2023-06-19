@@ -76,7 +76,6 @@ class Connection{
   }
 
   void addEventListener(String event, ConnectionCallback callback) {
-    print(callback);
     _bindings.add(new ConnectionBinding(event, callback));
     Map<String, dynamic> arguments = {
       'event': event,
@@ -84,7 +83,16 @@ class Connection{
     _invokeMethod('addConnectionListeners', arguments);
   }
 
-  void removeEventListener(event) {
+  void removeEventListener(String event) {
     _bindings = _bindings.where((binding) => binding.event != event).toList();
+    _invokeMethod('removeConnectionListeners');
+  }
+
+  String getName(){
+    return "Connection";
+  }
+
+  void setToken(String token){
+    _invokeMethod('setToken');
   }
 }
