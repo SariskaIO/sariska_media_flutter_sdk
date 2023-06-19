@@ -33,10 +33,8 @@ public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin, Flutte
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "getPlatformVersion":
-        print("get platform version")
         result("iOS " + UIDevice.current.systemVersion)
     case "initializeSdk":
-        print("initialize SDk")
         SariskaMediaTransport.initializeSdk()
     case "createLocalTracks":
         // Handle the method call and extract the arguments
@@ -61,23 +59,18 @@ public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin, Flutte
                         trackList.append(event)
                 }
                 emit("CREATE_LOCAL_TRACKS", trackList)
-
             }
         } else {
             result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
         }
-        print("Creating Local Tracks in Swift")
     default:
       result(FlutterMethodNotImplemented)
     }
   }
 
     private func emit(_ methodName: String, _ data: [Any]?) {
-        var event: Dictionary<String, Any?> =
-                ["action": methodName]
-        print("Event: " , event)
+        var event: Dictionary<String, Any?> = ["action": methodName]
         event["m"] = data
-        print("Event: " , event)
         eventSink?(event)
     }
 }
