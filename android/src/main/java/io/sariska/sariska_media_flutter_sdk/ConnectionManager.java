@@ -13,10 +13,7 @@ public class ConnectionManager extends Connection {
 
     private static final List<ConnectionBinding> bindings = new ArrayList();
     private Connection connection;
-
-    private Conference conference;
     private final ActionEmitter emit;
-
     private Map<String, Object> connectionParams = new HashMap<>();
 
     public ConnectionManager(ActionEmitter emit, Map<String, Object> params) {
@@ -28,17 +25,6 @@ public class ConnectionManager extends Connection {
     public void createConnection(Map<String, Object> map) {
         connection = new Connection((String) map.get("token"),
                 (String)map.get("roomName"), false);
-    }
-
-    private void createConference() {
-        conference =  connection.initJitsiConference();
-
-        conference.addEventListener("CONFERENCE_JOINED", () -> {
-            System.out.println("Conference Joined");
-        });
-
-        conference.join();
-        System.out.println("Conference Joined passed");
     }
 
     public void addConnectionListeners(HashMap<String, Object> event) {
@@ -54,9 +40,7 @@ public class ConnectionManager extends Connection {
 
     @Override
     public void connect() {
-        System.out.println("Connecting");
         connection.connect();
-        System.out.println("Connected");
     }
 
     @Override
@@ -74,7 +58,17 @@ public class ConnectionManager extends Connection {
         connection.removeFeature();
     }
 
+    @Override
+    public void setToken(String token) {
+        connection.setToken(token);
+    }
+
+    public void removeConnectionListeners(String event) {
+        connection.removeEventListener(event);
+    }
+
     public void release() {
         connection.disconnect();
     }
+
 }

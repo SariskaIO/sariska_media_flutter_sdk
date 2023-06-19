@@ -38,7 +38,6 @@ public class ConnectionPlugin: NSObject, FlutterPlugin, FlutterStreamHandler{
                 self?.emit(action, m)
             }
         }
-
         switch call.method {
         case "createConnection":
             if let arguments = call.arguments as? [String: Any] {
@@ -53,6 +52,34 @@ public class ConnectionPlugin: NSObject, FlutterPlugin, FlutterStreamHandler{
         case "addConnectionListeners":
             if let arguments = call.arguments as? [String: Any] {
                 manager?.addEventListener(arguments)
+            } else {
+                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+            }
+        case "addFeature":
+            if let arguments = call.arguments as? [String: Any] {
+                manager?.addFeature(arguments)
+            } else {
+                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+            }
+        case "release":
+            manager?.release()
+        case "removeFeature":
+            if let arguments = call.arguments as? [String: Any] {
+                manager?.removeFeature(arguments)
+            } else {
+                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+            }
+        case "destroy":
+            manager?.destroy()
+        case "setToken":
+            if let arguments = call.arguments as? String {
+                manager?.setToken(token: arguments)
+            } else {
+                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+            }
+        case "removeConnectionListeners":
+            if let arguments = call.arguments as? String {
+                manager?.removeEventListener(event: arguments)
             } else {
                 result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
             }
