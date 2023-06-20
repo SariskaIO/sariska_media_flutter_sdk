@@ -37,23 +37,38 @@ public class ConferencePlugin:  NSObject, FlutterPlugin, FlutterStreamHandler{
             }
         }
 
-        switch call.method{
-        case "createConference":
-            manager?.createConference();
-
-        case "addEventListeners":
-            if let arguments = call.arguments as? [String: Any] {
-                manager?.addEventListeners(arguments)
-            } else {
-                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+        if let params = call.arguments {
+            // if there are parameters
+            let selectorString = call.method + ":"
+            let selector = Selector(selectorString)
+            if manager?.responds(to: selector) != nil{
+                manager?.perform(selector, with: params)
             }
-
-        case "join":
-            manager?.join()
-
-        default:
-            result(FlutterMethodNotImplemented)
+        } else {
+            // if there are no parameters
+            let selectorString = call.method
+            let selector = Selector(selectorString)
+            if manager?.responds(to: selector) != nil{
+                manager?.perform(selector)
+            }
         }
+//        switch call.method{
+//        case "createConference":
+//            manager?.createConference();
+//
+//        case "addEventListeners":
+//            if let arguments = call.arguments as? [String: Any] {
+//                manager?.addEventListeners(arguments)
+//            } else {
+//                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+//            }
+//
+//        case "join":
+//            manager?.join()
+//
+//        default:
+//            result(FlutterMethodNotImplemented)
+//        }
     }
 
     private func emit(_ action: String, _ m: Dictionary<String, Any?>?) {
