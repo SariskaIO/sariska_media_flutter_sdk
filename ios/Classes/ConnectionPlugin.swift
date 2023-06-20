@@ -38,54 +38,70 @@ public class ConnectionPlugin: NSObject, FlutterPlugin, FlutterStreamHandler{
                 self?.emit(action, m)
             }
         }
-        switch call.method {
-        case "createConnection":
-            if let arguments = call.arguments as? [String: Any] {
-                manager?.createConnection(arguments);
-            } else {
-                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+        if let params = call.arguments {
+            // if there are parameters
+            let selectorString = call.method + ":"
+            let selector = Selector(selectorString)
+            if manager?.responds(to: selector) != nil{
+                manager?.perform(selector, with: params)
             }
-        case "connect":
-            manager?.connect()
-        case "disconnect":
-            manager?.disconnect()
-        case "addConnectionListeners":
-            if let arguments = call.arguments as? [String: Any] {
-                manager?.addEventListener(arguments)
-            } else {
-                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+        } else {
+            // if there are no parameters
+            let selectorString = call.method
+            let selector = Selector(selectorString)
+            if manager?.responds(to: selector) != nil{
+                manager?.perform(selector)
             }
-        case "addFeature":
-            if let arguments = call.arguments as? [String: Any] {
-                manager?.addFeature(arguments)
-            } else {
-                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
-            }
-        case "release":
-            manager?.release()
-        case "removeFeature":
-            if let arguments = call.arguments as? [String: Any] {
-                manager?.removeFeature(arguments)
-            } else {
-                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
-            }
-        case "destroy":
-            manager?.destroy()
-        case "setToken":
-            if let arguments = call.arguments as? String {
-                manager?.setToken(token: arguments)
-            } else {
-                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
-            }
-        case "removeConnectionListeners":
-            if let arguments = call.arguments as? String {
-                manager?.removeEventListener(event: arguments)
-            } else {
-                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
-            }
-        default:
-            result(FlutterMethodNotImplemented)
         }
+
+//        switch call.method {
+//        case "createConnection":
+//            if let arguments = call.arguments as? [String: Any] {
+//                manager?.createConnection(arguments);
+//            } else {
+//                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+//            }
+//        case "connect":
+//            manager?.connect()
+//        case "disconnect":
+//            manager?.disconnect()
+//        case "addConnectionListeners":
+//            if let arguments = call.arguments as? [String: Any] {
+//                manager?.addEventListener(arguments)
+//            } else {
+//                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+//            }
+//        case "addFeature":
+//            if let arguments = call.arguments as? [String: Any] {
+//                manager?.addFeature(arguments)
+//            } else {
+//                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+//            }
+//        case "release":
+//            manager?.release()
+//        case "removeFeature":
+//            if let arguments = call.arguments as? [String: Any] {
+//                manager?.removeFeature(arguments)
+//            } else {
+//                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+//            }
+//        case "destroy":
+//            manager?.destroy()
+//        case "setToken":
+//            if let arguments = call.arguments as? String {
+//                manager?.setToken(token: arguments)
+//            } else {
+//                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+//            }
+//        case "removeConnectionListeners":
+//            if let arguments = call.arguments as? String {
+//                manager?.removeEventListener(event: arguments)
+//            } else {
+//                result(FlutterError(code: "ARGUMENT_ERROR", message: "Invalid argument types", details: nil))
+//            }
+//        default:
+//            result(FlutterMethodNotImplemented)
+//        }
     }
 
     private func emit(_ action: String, _ m: Dictionary<String, Any?>?) {
