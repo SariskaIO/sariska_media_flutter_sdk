@@ -4,6 +4,7 @@ import com.facebook.react.bridge.ReadableMap;
 import io.sariska.sdk.Conference;
 import io.sariska.sdk.JitsiLocalTrack;
 import io.sariska.sdk.JitsiRemoteTrack;
+import io.sariska.sdk.Participant;
 import io.sariska.sdk.Utils;
 import java.util.HashMap;
 import java.util.Map;
@@ -223,15 +224,42 @@ public class ConferenceManager extends Conference {
                 break;
             case "TRACK_REMOVED":
                 // Handle track removed event
+                conference.addEventListener(eventString, (p) -> {
+                    JitsiRemoteTrack track = (JitsiRemoteTrack) p;
+                    Map<String, Object> trackMap = new HashMap<>();
+                    trackMap.put("type", ((JitsiRemoteTrack) p).getType());
+                    trackMap.put("participantId", ((JitsiRemoteTrack) p).getParticipantId());
+                    trackMap.put("id", ((JitsiRemoteTrack) p).getId());
+                    trackMap.put("muted",((JitsiRemoteTrack) p).isMuted());
+                    trackMap.put("streamURL", ((JitsiRemoteTrack) p).getStreamURL());
+                    emit.emit((String) event.get("event"), trackMap);
+                });
                 break;
             case "USER_JOINED":
-                // Handle user joined event
-                break;
             case "USER_LEFT":
                 // Handle user left event
+                // Handle user joined event
+                conference.addEventListener(eventString, (id, participant) -> {
+                    Participant participant1 = (Participant) participant;
+                    Map<String, Object> participantMap = new HashMap<>();
+                    participantMap.put("id", participant1.getId());
+                    participantMap.put("jid", participant1.getId());
+                    participantMap.put("avatar", participant1.getId());
+                    participantMap.put("email", participant1.getId());
+                    participantMap.put("moderator", participant1.getId());
+                    participantMap.put("audioMuted", participant1.getId());
+                    participantMap.put("videoMuted", participant1.getId());
+                    participantMap.put("displayName", participant1.getId());
+                    participantMap.put("role", participant1.getId());
+                    participantMap.put("status", participant1.getId());
+                    participantMap.put("hidden", participant1.getId());
+                    participantMap.put("botType", participant1.getId());
+                    emit.emit((String) event.get("event"), participantMap);
+                });
                 break;
             case "CONFERENCE_LEFT":
                 // Handle conference left event
+                // Do nothing for now
                 break;
             default:
                 // Handle unknown event
