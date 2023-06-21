@@ -13,7 +13,7 @@ public class ConferenceManager : NSObject{
 
     init(_ emitter: @escaping (_ action: String, _ m: [String: Any?]?) -> Void) {
         self.emitter = emitter
-        super.init()
+        super.init() 
     }
 
     func release(){
@@ -95,6 +95,59 @@ public class ConferenceManager : NSObject{
     @objc public func leave() {
         conference?.leave()
     }
+    
+    @objc public func isHidden() -> Bool{
+        return ((conference?.isHidden()) != nil)
+    }
+    
+    @objc public func getUserRole() -> String {
+        return (conference?.getUserRole())!
+    }
+
+    @objc public func getUserEmail() -> String {
+        return (conference?.getUserEmail())!
+    }
+
+    @objc public func getUserAvatar() -> String {
+        return (conference?.getUserAvatar())!
+    }
+
+    @objc public func isDTMFSupported() -> Bool {
+        return (conference?.isDTMFSupported())!
+    }
+
+    @objc public func getUserName() -> String {
+        return (conference?.getUserName())!
+    }
+
+    @objc public func getPhoneNumber() -> String {
+        return (conference?.getPhoneNumber())!
+    }
+
+    @objc public func getPhonePin() -> String {
+        return (conference?.getPhonePin())!
+    }
+
+    @objc public func isMembersOnly() -> Bool {
+        return (conference?.isMembersOnly())!
+    }
+
+    @objc public func isJoined() -> Bool {
+        return (conference?.isJoined())!
+    }
+
+    @objc public func getLocalTracks() -> [JitsiLocalTrack] {
+        return (conference?.getLocalTracks())! as! [JitsiLocalTrack]
+    }
+
+    @objc public func getParticipants() -> [Participant] {
+        return (conference?.getParticipants())! as! [Participant]
+    }
+
+    @objc public func getRemoteTracks() -> [JitsiRemoteTrack] {
+        return (conference?.getParticipants())! as! [JitsiRemoteTrack]
+    }
+
 
     @objc func addEventListeners(_ dictionary: [String: Any]){
         var eventString = dictionary["event"] as! String
@@ -122,7 +175,7 @@ public class ConferenceManager : NSObject{
             // Handle dominant speaker changed event
             conference?.addEventListener(eventString, callback1: {
                 [self] id in
-                emitter(dictionary["event"] as! String, id as! [String : Any?])
+                emitter(dictionary["event"] as! String, id as? [String : Any?])
             })
             break;
         case "TRACK_REMOVED":
