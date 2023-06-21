@@ -7,6 +7,7 @@ import io.sariska.sdk.JitsiRemoteTrack;
 import io.sariska.sdk.Participant;
 import io.sariska.sdk.Utils;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ConferenceManager extends Conference {
@@ -73,6 +74,66 @@ public class ConferenceManager extends Conference {
         } else {
             conference.muteParticipant(id);
         }
+    }
+
+    @Override
+    public String getUserRole() {
+        return conference.getUserRole();
+    }
+
+    @Override
+    public String getUserEmail() {
+        return conference.getUserEmail();
+    }
+
+    @Override
+    public String getUserAvatar() {
+        return conference.getUserAvatar();
+    }
+
+    @Override
+    public Boolean isDTMFSupported() {
+        return conference.isDTMFSupported();
+    }
+
+    @Override
+    public String getUserName() {
+        return conference.getUserName();
+    }
+
+    @Override
+    public String getPhoneNumber() {
+        return conference.getPhoneNumber();
+    }
+
+    @Override
+    public String getPhonePin() {
+        return conference.getPhonePin();
+    }
+
+    @Override
+    public Boolean isMembersOnly() {
+        return conference.isMembersOnly();
+    }
+
+    @Override
+    public Boolean isJoined() {
+        return conference.isJoined();
+    }
+
+    @Override
+    public List<JitsiLocalTrack> getLocalTracks() {
+        return conference.getLocalTracks();
+    }
+
+    @Override
+    public List<Participant> getParticipants() {
+        return conference.getParticipants();
+    }
+
+    @Override
+    public List<JitsiRemoteTrack> getRemoteTracks() {
+        return conference.getRemoteTracks();
     }
 
     public void setDisplayName(Map<String, ?> params) {
