@@ -192,6 +192,142 @@ public class ConferenceManager : NSObject{
                 emitter(dictionary["event"] as! String, dictionary)
             })
             break;
+        case "CONFERENCE_FAILED":
+            // Handle conference failed case
+            break;
+
+        case "CONFERENCE_ERROR":
+            // Handle conference error case
+            break;
+
+        case "BEFORE_STATISTICS_DISPOSED":
+            // Handle before statistics disposed case
+            break;
+
+        case "TALK_WHILE_MUTED":
+            // Handle talk while muted case
+            break;
+
+        case "NO_AUDIO_INPUT":
+            // Handle no audio input case
+            break;
+
+        case "AUDIO_INPUT_STATE_CHANGE":
+            // Handle audio input state change case
+            break;
+
+        case "PASSWORD_REQUIRED":
+            // Handle password required case
+            break;
+
+        case "NOISY_MIC":
+            // Handle noisy microphone case
+            break;
+
+        case "LOCAL_STATS_UPDATED":
+            // Handle local statistics updated case
+            break;
+
+        case "SUBJECT_CHANGED":
+            // Handle subject changed case
+            break;
+
+        case "CONFERENCE_UNIQUE_ID_SET":
+            // Handle conference unique ID set case
+            break;
+
+        case "DTMF_SUPPORT_CHANGED":
+            // Handle DTMF support changed case
+            break;
+
+        case "TRACK_MUTE_CHANGED":
+            // Handle track mute changed case
+            break;
+
+        case "LOBBY_USER_LEFT":
+            // Handle lobby user left case
+            break;
+
+        case "MEMBERS_ONLY_CHANGED":
+            // Handle members only changed case
+            break;
+
+        case "VIDEO_SIP_GW_AVAILABILITY_CHANGED":
+            // Handle video SIP gateway availability changed case
+            break;
+
+        case "VIDEO_SIP_GW_SESSION_STATE_CHANGED":
+            // Handle video SIP gateway session state changed case
+            break;
+
+        case "TRACK_AUDIO_LEVEL_CHANGED":
+            // Handle track audio level changed case
+            break;
+
+        case "DISPLAY_NAME_CHANGED":
+            // Handle display name changed case
+            break;
+
+        case "LAST_N_ENDPOINTS_CHANGED":
+            // Handle last N endpoints changed case
+            break;
+
+        case "USER_ROLE_CHANGED":
+            // Handle user role changed case
+            break;
+
+        case "USER_STATUS_CHANGED":
+            // Handle user status changed case
+            break;
+
+        case "KICKED":
+            // Handle kicked case
+            break;
+
+        case "START_MUTED_POLICY_CHANGED":
+            // Handle start muted policy changed case
+            break;
+
+        case "STARTED_MUTED":
+            // Handle started muted case
+            break;
+
+        case "ENDPOINT_MESSAGE_RECEIVED":
+            // Handle endpoint message received case
+            break;
+
+        case "REMOTE_STATS_UPDATED":
+            // Handle remote statistics updated case
+            break;
+
+        case "AUTH_STATUS_CHANGED":
+            // Handle authentication status changed case
+            break;
+
+        case "LOBBY_USER_JOINED":
+            // Handle lobby user joined case
+            break;
+
+        case "LOBBY_USER_UPDATED":
+            // Handle lobby user updated case
+            break;
+
+        case "MESSAGE_RECEIVED":
+            // Handle message received case
+            break;
+
+        case "RECORDER_STATE_CHANGED":
+            // Handle recorder state changed case
+            break;
+
+        case "SUBTITLES_RECEIVED":
+            // Handle subtitles received case
+            break;
+
+        case "PARTICIPANT_KICKED":
+            // Handle participant kicked case
+            break;
+            
         default:
             print("Event Listener Not Implemented")
         }
