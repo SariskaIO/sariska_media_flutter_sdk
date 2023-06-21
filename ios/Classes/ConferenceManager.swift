@@ -118,10 +118,82 @@ public class ConferenceManager : NSObject{
                     emitter(dictionary["event"] as! String, event)
                 }
             })
-
+        case "DOMINANT_SPEAKER_CHANGED":
+            // Handle dominant speaker changed event
+            conference?.addEventListener(eventString, callback1: {
+                [self] id in
+                emitter(dictionary["event"] as! String, id as! [String : Any?])
+            })
+            break;
+        case "TRACK_REMOVED":
+            // Handle track removed event
+            conference?.addEventListener(eventString, callback1: {
+                [self] track in
+                let someTrack = track as! JitsiRemoteTrack
+                var trackEvent = [String: Any]()
+                trackEvent["type"] = someTrack.getType()
+                trackEvent["participantId"] = someTrack.getParticipantId()
+                trackEvent["muted"] = someTrack.isMuted()
+                trackEvent["streamURL"] = someTrack.getStreamURL()
+                trackEvent["id"] = someTrack.getId()
+                if(someTrack.getStreamURL() == SariskaMediaTransportFlutterPlugin.localTrack?.getStreamURL()){
+                    // do nothing
+                }else{
+                    emitter(dictionary["event"] as! String, trackEvent)
+                }
+            })
+            break;
+        case "USER_JOINED":
+            // Handle user joined event
+            conference?.addEventListener(eventString, callback2: {
+                [self] id, participant in
+                let part = participant as! Participant
+                var partEvent = [String: Any]()
+                partEvent["participantId"] = part.getId()
+                partEvent["jid"] = part.getJid()
+                partEvent["displayName"] = part.getDisplayName()
+                partEvent["moderator"] = part.isModerator()
+                partEvent["hidden"] = part.isHidden()
+                partEvent["videoMuted"] = part.isVideoMuted()
+                partEvent["audioMuted"] = part.isAudioMuted()
+                partEvent["botType"] = part.getBotType()
+                partEvent["status"] = part.getStatus()
+                partEvent["avatar"] = part.getAvatar()
+                partEvent["role"] = part.getRole()
+                partEvent["email"] = part.getEmail()
+                emitter(dictionary["event"] as! String, partEvent)
+            })
+            break;
+        case "USER_LEFT":
+            // Handle user left event
+            conference?.addEventListener(eventString, callback2: {
+                [self] id, participant in
+                let part = participant as! Participant
+                var partEvent = [String: Any]()
+                partEvent["participantId"] = part.getId()
+                partEvent["jid"] = part.getJid()
+                partEvent["displayName"] = part.getDisplayName()
+                partEvent["moderator"] = part.isModerator()
+                partEvent["hidden"] = part.isHidden()
+                partEvent["videoMuted"] = part.isVideoMuted()
+                partEvent["audioMuted"] = part.isAudioMuted()
+                partEvent["botType"] = part.getBotType()
+                partEvent["status"] = part.getStatus()
+                partEvent["avatar"] = part.getAvatar()
+                partEvent["role"] = part.getRole()
+                partEvent["email"] = part.getEmail()
+                emitter(dictionary["event"] as! String, partEvent)
+            })
+            break;
+        case "CONFERENCE_LEFT":
+            // Handle conference left event
+            conference?.addEventListener(eventString, callback0: {
+                [self] in
+                emitter(dictionary["event"] as! String, dictionary)
+            })
+            break;
         default:
             print("Event Listener Not Implemented")
         }
     }
-
 }
