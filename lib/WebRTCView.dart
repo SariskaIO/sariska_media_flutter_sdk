@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
 import 'package:sariska_media_flutter_sdk/Track.dart';
 
 final Map<int, MethodChannel> _channels = {};

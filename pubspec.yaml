@@ -1,6 +1,6 @@
 name: sariska_media_flutter_sdk
-description: Sariska Video Calling SDK for Flutter
-version: 0.0.1
+description: Sariska Media Flutter SDK provides powerful Dart API's for developing real-time applications for audio and video calling.
+version: 0.0.2
 homepage: https://github.com/SariskaIO/Sariska-Media-Flutter-SDK
 
 environment:
@@ -30,19 +30,19 @@ flutter:
       ios:
         pluginClass: SariskaMediaTransportFlutterPlugin
 
-  androidPackage: io.sariska.sariska_media_flutter_sdk
-  androidPermissions:
-    - android.permission.CAMERA
-    - android.permission.RECORD_AUDIO
-    - android.permission.MODIFY_AUDIO_SETTINGS
-    - android.permission.INTERNET
+androidPackage: io.sariska.sariska_media_flutter_sdk
+androidPermissions:
+  - android.permission.CAMERA
+  - android.permission.RECORD_AUDIO
+  - android.permission.MODIFY_AUDIO_SETTINGS
+  - android.permission.INTERNET
 
-  ios:
-    pluginClass: SariskaMediaTransportFlutterPlugin
-    permissions:
-      - camera
-      - microphone
-      - internet
+ios:
+  pluginClass: SariskaMediaTransportFlutterPlugin
+  permissions:
+    - camera
+    - microphone
+    - internet
 
   # Mention that this plugin supports Android and iOS currently.
   platforms:

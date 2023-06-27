@@ -3,15 +3,15 @@ import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'JitsiLocalTrack.dart';
 import 'SariskaMediaTransportMethodChannel.dart';
 
-typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
-
+/// A platform interface for Sariska Media Transport.
 abstract class SariskaMediaTransportInterface extends PlatformInterface {
-  /// Constructs a SariskaMediaFlutterSdkPlatform.
+  /// Constructs a SariskaMediaTransportInterface.
   SariskaMediaTransportInterface() : super(token: _token);
 
   static final Object _token = Object();
 
-  static SariskaMediaTransportInterface _instance = SariskaMediaTransportMethodChannel();
+  static SariskaMediaTransportInterface _instance =
+  SariskaMediaTransportMethodChannel();
 
   /// The default instance of [SariskaMediaTransportInterface] to use.
   /// Defaults to [SariskaMediaTransportMethodChannel].
@@ -25,24 +25,38 @@ abstract class SariskaMediaTransportInterface extends PlatformInterface {
     _instance = instance;
   }
 
+  /// Retrieves the platform version.
   Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+    throw UnimplementedError('getPlatformVersion() has not been implemented.');
   }
 
-  void initializeSdk(){
+  /// Initializes the Sariska Media SDK.
+  void initializeSdk() {
     throw UnimplementedError('initializeSdk() has not been implemented.');
   }
 
-  void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback){
+  /// Creates local tracks based on the provided options.
+  ///
+  /// The [options] parameter specifies the configuration options for creating
+  /// the local tracks.
+  /// The [callback] parameter is a callback function that receives a list of
+  /// [JitsiLocalTrack] instances created by the SDK.
+  void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback) {
     throw UnimplementedError('createLocalTracks(Map<String, dynamic> options) has not been implemented.');
   }
 
-  Connection jitsiConnection(String token, String roomName, bool isNightly){
+  /// Creates a connection to the Jitsi server.
+  ///
+  /// The [token] parameter is the JWT token for authentication.
+  /// The [roomName] parameter is the name of the Jitsi conference room.
+  /// The [isNightly] parameter specifies whether the connection is for a nightly build.
+  /// Returns a [Connection] object representing the connection to the Jitsi server.
+  Connection jitsiConnection(String token, String roomName, bool isNightly) {
     throw UnimplementedError('jitsiConnection() has not been implemented.');
   }
 
-  String getName(){
+  /// Retrieves the name of the Sariska Media Transport implementation.
+  String getName() {
     throw UnimplementedError('getName() has not been implemented.');
   }
-
 }
