@@ -4,16 +4,22 @@ import 'JitsiLocalTrack.dart';
 import 'JitsiRemoteTrack.dart';
 import 'Participant.dart';
 
+/// Signature for a conference callback without parameters.
 typedef void ConferenceCallbackParam0();
 
+/// Signature for a conference callback with one parameter.
 typedef void ConferenceCallbackParam1<W>(W w);
 
+/// Signature for a conference callback with two parameters.
 typedef void ConferenceCallbackParam2<W, X>(W w, X x);
 
+/// Signature for a conference callback with three parameters.
 typedef void ConferenceCallbackParam3<W, X, Y>(W w, X x, Y y);
 
+/// Signature for a conference callback with four parameters.
 typedef void ConferenceCallbackParam4<W, X, Y, Z>(W w, X x, Y y, Z z);
 
+/// A binding of a conference event and its corresponding callback.
 class ConferenceBinding<T> {
   String event;
   T callback;
@@ -23,15 +29,18 @@ class ConferenceBinding<T> {
     this.callback = callback;
   }
 
+  /// Returns the event associated with the binding.
   String getEvent() {
     return this.event;
   }
 
+  /// Returns the callback associated with the binding.
   T getCallback() {
     return this.callback;
   }
 }
 
+/// Represents a conference.
 class Conference {
   static var _bindings = <ConferenceBinding>[];
   static var remoteTracks = <JitsiRemoteTrack>[];
@@ -61,31 +70,31 @@ class Conference {
       for (var i = 0; i < _bindings.length; i++) {
         if (_bindings[i].getEvent() == action) {
           switch (action) {
-            case "CONFERENCE_LEFT":
-            case "CONFERENCE_FAILED":
-            case "CONFERENCE_ERROR":
-            case "BEFORE_STATISTICS_DISPOSED":
-            case "TALK_WHILE_MUTED":
-            case "NO_AUDIO_INPUT":
-            case "AUDIO_INPUT_STATE_CHANGE":
-            case "NOISY_MIC":
-              (_bindings[i].getCallback() as ConferenceCallbackParam0)();
-              break;
-            case "CONFERENCE_JOINED":
-              (_bindings[i].getCallback() as ConferenceCallbackParam0)();
-              break;
-            case "LOCAL_STATS_UPDATED":
-              (_bindings[i].getCallback()
-              as ConferenceCallbackParam1)(m["statsObject"]);
-              break;
-            case 'DOMINANT_SPEAKER_CHANGED':
-              (_bindings[i].getCallback() as ConferenceCallbackParam1)(m["id"]);
-              break;
-            case 'SUBJECT_CHANGED':
-              (_bindings[i].getCallback()
-              as ConferenceCallbackParam1)(m["subject"]);
-              break;
-            case 'CONFERENCE_UNIQUE_ID_SET':
+          case "CONFERENCE_LEFT":
+          case "CONFERENCE_FAILED":
+          case "CONFERENCE_ERROR":
+          case "BEFORE_STATISTICS_DISPOSED":
+          case "TALK_WHILE_MUTED":
+          case "NO_AUDIO_INPUT":
+          case "AUDIO_INPUT_STATE_CHANGE":
+          case "NOISY_MIC":
+          (_bindings[i].getCallback() as ConferenceCallbackParam0)();
+          break;
+          case "CONFERENCE_JOINED":
+          (_bindings[i].getCallback() as ConferenceCallbackParam0)();
+          break;
+          case "LOCAL_STATS_UPDATED":
+          (_bindings[i].getCallback()
+          as ConferenceCallbackParam1)(m["statsObject"]);
+          break;
+          case 'DOMINANT_SPEAKER_CHANGED':
+          (_bindings[i].getCallback() as ConferenceCallbackParam1)(m["id"]);
+          break;
+          case 'SUBJECT_CHANGED':
+          (_bindings[i].getCallback()
+          as ConferenceCallbackParam1)(m["subject"]);
+          break;
+          case 'CONFERENCE_UNIQUE_ID_SET':
               (_bindings[i].getCallback()
               as ConferenceCallbackParam1)(m["meetingId"]);
               break;
