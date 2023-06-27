@@ -13,7 +13,7 @@ public class ConferenceManager : NSObject{
 
     init(_ emitter: @escaping (_ action: String, _ m: [String: Any?]?) -> Void) {
         self.emitter = emitter
-        super.init() 
+        super.init()
     }
 
     func release(){
