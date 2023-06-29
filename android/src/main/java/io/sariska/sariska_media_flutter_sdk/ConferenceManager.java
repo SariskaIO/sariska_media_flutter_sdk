@@ -141,7 +141,7 @@ public class ConferenceManager extends Conference {
     }
 
     public void addTrack(Map<String, ?> params) {
-        for (JitsiLocalTrack track : conference.getLocalTracks()) {
+        for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
             if (track.getId().equals(params.get("trackId"))) {
                 conference.addTrack(track);
             }

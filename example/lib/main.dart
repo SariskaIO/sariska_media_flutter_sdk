@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -9,7 +8,8 @@ import 'package:sariska_media_flutter_sdk/JitsiRemoteTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
 import 'package:sariska_media_flutter_sdk/Track.dart';
 import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
-import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
+
+import 'GenerateToken.dart';
 
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
@@ -27,11 +27,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   final _sariskaMediaTransport = SariskaMediaTransport();
   String token = 'unknown';
   String streamURL = '';
-
+  List<JitsiLocalTrack> localtracks = [];
 
   @override
   void initState() {
@@ -39,102 +38,90 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
-
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
-
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      token = await generateToken();
-      // For makeing sure bridge is working fine.
-      platformVersion = await _sariskaMediaTransport.getPlatformVersion() ?? 'Unknown platform version';
-
-      // Initialize Sariska Media Tranasport
-      _sariskaMediaTransport.initializeSdk();
-
-      setupLocalStream();
-
-      //Create Connection
-      final _connection = Connection(token, "dipak", false);
-
-      _connection.addEventListener("CONNECTION_ESTABLISHED", () {
-        Conference _conference = _connection.initJitsiConference();
-
-        _conference.addEventListener("CONFERENCE_JOINED", (){
-          print("Conference joined from Swift and Android");
-        });
-
-        _conference.addEventListener("TRACK_ADDED", (track){
-          JitsiRemoteTrack remoteTrack = track;
-          if(remoteTrack.getStreamURL() == streamURL){
-            return;
-          }
-          if(remoteTrack.getType() == "audio"){
-            return;
-          }
-          streamURL = remoteTrack.getStreamURL();
-          replaceChild(remoteTrack);
-        });
-
-        _conference.join();
-      });
-
-      _connection.addEventListener("CONNECTION_FAILED", () {
-        print("Connection Failed");
-      });
-
-      _connection.addEventListener("CONNECTION_DISCONNECTED", () {
-        print("Connection Disconnected");
-      });
-
-      _connection.connect();
-
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
+    token = "sadasdsa";
+    _sariskaMediaTransport.initializeSdk();
+    setupLocalStream();
     if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
-  void setupLocalStream(){
+  void setupLocalStream() {
     Map<String, dynamic> options = new Map();
     options["audio"] = true;
     options["video"] = true;
-    List<JitsiLocalTrack> localtracks = [];
-    _sariskaMediaTransport.createLocalTracks(options, (tracks){
+
+
+    _sariskaMediaTransport.createLocalTracks(options, (tracks) {
       print("Inside Create Local Tracks");
       localtracks = tracks;
-      for(JitsiLocalTrack track in localtracks){
-        if(track.getType() == "video"){
-          //replaceChild(track);
+      for (JitsiLocalTrack track in localtracks) {
+        if (track.getType() == "video") {
+          replaceChild(track);
         }
       }
     });
+
+    startConnection();
   }
 
-  Widget _currentChild = PlaceholderWidget();
+  void startConnection() async {
+    token = await generateToken();
+    Connection _connection =
+    _sariskaMediaTransport.jitsiConnection(token, "ramdon", false);
+
+    _connection.addEventListener("CONNECTION_ESTABLISHED", () {
+
+      Conference _conference = _connection.initJitsiConference();
+
+      _conference.addEventListener("CONFERENCE_JOINED", () {
+        print("Conference Joined sdasdsa");
+        print("track id" + localtracks[1].getType());
+        _conference.addTrack(localtracks[1]);
+      });
+
+      _conference.addEventListener("TRACK_ADDED", (track) {
+        JitsiRemoteTrack remoteTrack = track;
+        if (remoteTrack.getStreamURL() == streamURL) {
+          return;
+        }
+        if (remoteTrack.getType() == "audio") {
+          return;
+        }
+        streamURL = remoteTrack.getStreamURL();
+        replaceChild(remoteTrack);
+      });
+
+      _conference.join();
+    });
+
+    _connection.addEventListener("CONNECTION_FAILED", () {
+      print("Connection Failed");
+    });
+
+    _connection.addEventListener("CONNECTION_DISCONNECTED", () {
+      print("Connection Disconnected");
+    });
+
+    _connection.connect();
+  }
+
+  Widget _currentChild = VideoView(isLocal: true);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: _currentChild,
-      ),
+          appBar: AppBar(
+            title: const Text('Sariska Media Flutter Demo'),
+          ),
+          body: Column(
+            children: [
+              Expanded(child: _currentChild),
+            ],
+          )),
     );
   }
-
 
   void replaceChild(Track localTrack) {
     setState(() {
@@ -142,11 +129,21 @@ class _MyAppState extends State<MyApp> {
     });
   }
 }
-class PlaceholderWidget extends StatelessWidget {
+
+class VideoView extends StatelessWidget {
+  final bool isLocal;
+  const VideoView({required this.isLocal});
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Placeholder Widget'),
+    // Add your video view implementation here
+    return Container(
+      color: isLocal ? Colors.blueGrey : Colors.black,
+      child: Center(
+        child: Text(
+          isLocal ? 'Local Video View' : 'Remote Video View',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 }
@@ -159,12 +156,11 @@ class UpdatedChildWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: 360,
-        height: 240,
         child: buildWebRTCView(),
       ),
     );
   }
+
   WebRTCView buildWebRTCView() {
     return WebRTCView(
       localTrack: track,
@@ -173,4 +169,3 @@ class UpdatedChildWidget extends StatelessWidget {
     );
   }
 }
-
