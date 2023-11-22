@@ -33,6 +33,8 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   private MethodChannel methodChannel;
   private EventChannel eventChannel;
   private EventChannel.EventSink eventSink;
+
+  public static List<JitsiLocalTrack> localTracks = new ArrayList<JitsiLocalTrack>();
   private Context applicationContext;
   private ConnectionPlugin connectionPlugin;
   private ConferencePlugin conferencePlugin;
@@ -89,6 +91,7 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     bundle.putBoolean("video", (Boolean) options.get("video"));
     SariskaMediaTransport.createLocalTracks(bundle, tracks ->{
       System.out.println("When native side CT work");
+      localTracks = tracks;
       List<Map<String , Object>> localTracks = new ArrayList<>();
       for (JitsiLocalTrack track : tracks){
         Map<String , Object> map = new HashMap<>();
