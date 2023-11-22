@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
 import 'dart:ui';
-import 'package:flutter_iconly/flutter_iconly.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
@@ -28,6 +28,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String _platformVersion = 'Unknown';
   final _sariskaMediaTransport = SariskaMediaTransport();
   String token = 'unknown';
   String streamURL = '';
@@ -47,132 +48,143 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Demo App'),
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.deepPurple,
-          elevation: 25,
-          shadowColor: Colors.black,
-        ),
-        body: Column(
+        body: Stack(
           children: [
-            Flexible(
-              flex: 2,
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+            if (localTrack != null)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: WebRTCView(
+                  localTrack: localTrack!,
+                  mirror: true,
+                  objectFit: 'cover',
                 ),
-                itemCount: remoteTracks.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Stack(
-                    children: [
-                      Center(
-                        child: SizedBox(
-                          width: 360,
-                          height: 240,
-                          child: AspectRatio(
-                            aspectRatio:
-                                16 / 9, // Adjust the aspect ratio as needed
-                            child: WebRTCView(
-                              localTrack: remoteTracks[index],
-                              mirror: true,
-                              objectFit: 'cover',
-                            ),
+              ),
+            Positioned(
+              bottom: 140,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: remoteTracks.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 2.0, right: 2.0),
+                      child: Container(
+                        width: 120,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: WebRTCView(
+                          localTrack: remoteTracks[index],
+                          mirror: true,
+                          objectFit: 'cover',
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(30),
+                    clipBehavior: Clip.antiAlias,
+                    color: Colors.transparent,
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaY: 20,
+                        sigmaX: 20,
+                      ),
+                      child: InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 20,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              buildCustomButton(
+                                onPressed: () {
+                                  setState(() {
+                                    for (JitsiLocalTrack track in localtracks) {
+                                      if (track.getType() == "audio") {
+                                        if (isAudioOn) {
+                                          track.mute();
+                                          isAudioOn = !isAudioOn;
+                                        } else {
+                                          track.unmute();
+                                          isAudioOn = !isAudioOn;
+                                        }
+                                        break;
+                                      }
+                                    }
+                                  });
+                                },
+                                icon: isAudioOn
+                                    ? IconlyLight.voice
+                                    : Icons.mic_off_outlined,
+                                color: Colors.transparent,
+                              ),
+                              buildEndCallButton(
+                                onPressed: () {
+                                  Get.offAll(const MyApp());
+                                },
+                              ),
+                              buildCustomButton(
+                                onPressed: () {
+                                  setState(() {
+                                    for (JitsiLocalTrack track in localtracks) {
+                                      if (track.getType() == "video") {
+                                        if (isVideoOn) {
+                                          track.mute();
+                                          isVideoOn = !isVideoOn;
+                                        } else {
+                                          track.unmute();
+                                          isVideoOn = !isVideoOn;
+                                        }
+                                        break;
+                                      }
+                                    }
+                                  });
+                                },
+                                icon: isVideoOn
+                                    ? IconlyLight.video
+                                    : Icons.videocam_off_outlined,
+                                color: Colors.transparent,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            if (localTrack != null)
-              Align(
-                alignment: Alignment.centerRight,
-                child: SizedBox(
-                  width: 150,
-                  height: 180,
-                  child: WebRTCView(
-                    localTrack: localTrack!,
-                    mirror: true,
-                    objectFit: 'cover',
-                  ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(30),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 20,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      buildCustomButton(
-                        onPressed: () {
-                          setState(() {
-                            for (JitsiLocalTrack track in localtracks) {
-                              if (track.getType() == "audio") {
-                                if (isAudioOn) {
-                                  track.mute();
-                                  isAudioOn = !isAudioOn;
-                                } else {
-                                  track.unmute();
-                                  isAudioOn = !isAudioOn;
-                                }
-                                break;
-                              }
-                            }
-                          });
-                        },
-                        icon: isAudioOn
-                            ? IconlyLight.voice
-                            : Icons.mic_off_outlined,
-                        color: Colors.transparent,
-                      ),
-                      buildEndCallButton(
-                        onPressed: () {
-                          Get.offAll(const MyApp());
-                        },
-                      ),
-                      buildCustomButton(
-                        onPressed: () {
-                          setState(() {
-                            for (JitsiLocalTrack track in localtracks) {
-                              if (track.getType() == "video") {
-                                if (isVideoOn) {
-                                  track.mute();
-                                  isVideoOn = !isVideoOn;
-                                } else {
-                                  track.unmute();
-                                  isVideoOn = !isVideoOn;
-                                }
-                                break;
-                              }
-                            }
-                          });
-                        },
-                        icon: isVideoOn
-                            ? IconlyLight.video
-                            : Icons.videocam_off_outlined,
-                        color: Colors.transparent,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.white,
       ),
     );
   }
@@ -194,7 +206,7 @@ class _MyAppState extends State<MyApp> {
 
         _conference.addEventListener("CONFERENCE_JOINED", () {
           print("Conference joined from Swift and Android");
-          print("Local Track length: "+ localtracks.length.toString());
+          print("Local Track length: " + localtracks.length.toString());
           for (JitsiLocalTrack track in localtracks) {
             _conference.addTrack(track);
           }
@@ -225,9 +237,7 @@ class _MyAppState extends State<MyApp> {
 
       _connection.connect();
 
-      setState(() {
-
-      });
+      setState(() {});
     } on PlatformException {
       print("Failed to get platform version.");
     }
@@ -258,7 +268,6 @@ class _MyAppState extends State<MyApp> {
     _sariskaMediaTransport.jitsiConnection(token, "ramdon", false);
 
     _connection.addEventListener("CONNECTION_ESTABLISHED", () {
-
       Conference _conference = _connection.initJitsiConference();
 
       _conference.addEventListener("CONFERENCE_JOINED", () {
@@ -320,7 +329,7 @@ class _MyAppState extends State<MyApp> {
           ),
           child: Icon(
             icon,
-            color: Colors.white,
+            color: Colors.black,
             size: 30,
           ),
         ),
