@@ -226,7 +226,7 @@ class _MyAppState extends State<MyApp> {
       _connection.connect();
 
       setState(() {
-        _platformVersion = platformVersion;
+
       });
     } on PlatformException {
       print("Failed to get platform version.");

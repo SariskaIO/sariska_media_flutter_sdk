@@ -37,7 +37,6 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   public static List<JitsiLocalTrack> localTracks = new ArrayList<JitsiLocalTrack>();
   private Context applicationContext;
   private ConnectionPlugin connectionPlugin;
-  public static List<JitsiLocalTrack> localTracks = new ArrayList<JitsiLocalTrack>();
   private ConferencePlugin conferencePlugin;
   private Handler handler = new Handler(Looper.getMainLooper());;
 
@@ -50,7 +49,6 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     applicationContext = flutterPluginBinding.getApplicationContext();
     connectionPlugin = new ConnectionPlugin(flutterPluginBinding.getBinaryMessenger());
     conferencePlugin = new ConferencePlugin(flutterPluginBinding.getBinaryMessenger());
-
 
     FlutterEngine flutterEngine = flutterPluginBinding.getFlutterEngine();
     PlatformViewRegistry registry = flutterEngine.getPlatformViewsController().getRegistry();
@@ -87,6 +85,7 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   }
 
   private void createLocalTracks(Map<String, Object> options){
+    System.out.println("Innnnnnnnnnnn");
     Bundle bundle = new Bundle();
     bundle.putBoolean("audio", (Boolean) options.get("audio"));
     bundle.putBoolean("video", (Boolean) options.get("video"));
