@@ -23,6 +23,7 @@ public class ConferenceManager extends Conference {
     }
     @Override
     public void join() {
+        System.out.println("inside conference join");
         conference.join();
     }
 
