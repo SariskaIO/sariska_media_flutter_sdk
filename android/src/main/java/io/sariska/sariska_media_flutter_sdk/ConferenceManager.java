@@ -23,6 +23,7 @@ public class ConferenceManager extends Conference {
     }
     @Override
     public void join() {
+        System.out.println("inside conference join");
         conference.join();
     }
 
@@ -141,8 +142,14 @@ public class ConferenceManager extends Conference {
     }
 
     public void addTrack(Map<String, ?> params) {
+        System.out.println("Gerere");
+        System.out.println(conference.getLocalTracks().size());
+        conference.getLocalTracks();
         for (JitsiLocalTrack track : conference.getLocalTracks()) {
+            System.out.println("inside addTrack1");
             if (track.getId().equals(params.get("trackId"))) {
+                System.out.println("inside addTrack2");
+                System.out.println("Track: " + track);
                 conference.addTrack(track);
             }
         }

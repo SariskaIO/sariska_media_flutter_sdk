@@ -17,11 +17,7 @@ rootProject.allprojects {
         google()
         mavenCentral()
         maven {
-            url = "https://maven.pkg.github.com/SariskaIO/maven-repository"
-            credentials {
-                username = "gaurav2001"
-                password = "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"
-            }
+            url = "https://github.com/SariskaIO/sariska-maven-repository/raw/main"
         }
     }
 }
@@ -41,7 +37,7 @@ android {
     }
 
     dependencies {
-        api 'io.sariska:sariska-media-transport:5.4.3'
+        api 'io.sariska:sariska-media-transport:5.4.7'
         testImplementation 'junit:junit:4.13.2'
         testImplementation 'org.mockito:mockito-core:5.0.0'
     }

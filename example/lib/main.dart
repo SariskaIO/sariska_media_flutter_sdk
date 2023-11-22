@@ -188,16 +188,17 @@ class _MyAppState extends State<MyApp> {
       _sariskaMediaTransport.initializeSdk();
       setupLocalStream();
 
-      final _connection = Connection(token, "gaurav", false);
+      final _connection = Connection(token, "random", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         Conference _conference = _connection.initJitsiConference();
-        for (JitsiLocalTrack track in localtracks) {
-          _conference.addTrack(track);
-        }
 
         _conference.addEventListener("CONFERENCE_JOINED", () {
           print("Conference joined from Swift and Android");
+          print("Local Track length: "+ localtracks.length.toString());
+          for (JitsiLocalTrack track in localtracks) {
+            _conference.addTrack(track);
+          }
         });
 
         _conference.addEventListener("TRACK_ADDED", (track) {
