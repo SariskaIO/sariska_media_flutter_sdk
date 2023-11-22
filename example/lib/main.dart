@@ -28,7 +28,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   final _sariskaMediaTransport = SariskaMediaTransport();
   String token = 'unknown';
   String streamURL = '';
@@ -249,6 +248,49 @@ class _MyAppState extends State<MyApp> {
         }
       }
     });
+
+    startConnection();
+  }
+
+  void startConnection() async {
+    token = await generateToken();
+    Connection _connection =
+    _sariskaMediaTransport.jitsiConnection(token, "ramdon", false);
+
+    _connection.addEventListener("CONNECTION_ESTABLISHED", () {
+
+      Conference _conference = _connection.initJitsiConference();
+
+      _conference.addEventListener("CONFERENCE_JOINED", () {
+        print("Conference Joined sdasdsa");
+        print("track id" + localtracks[1].getType());
+        _conference.addTrack(localtracks[1]);
+      });
+
+      _conference.addEventListener("TRACK_ADDED", (track) {
+        JitsiRemoteTrack remoteTrack = track;
+        if (remoteTrack.getStreamURL() == streamURL) {
+          return;
+        }
+        if (remoteTrack.getType() == "audio") {
+          return;
+        }
+        streamURL = remoteTrack.getStreamURL();
+        replaceChild(remoteTrack);
+      });
+
+      _conference.join();
+    });
+
+    _connection.addEventListener("CONNECTION_FAILED", () {
+      print("Connection Failed");
+    });
+
+    _connection.addEventListener("CONNECTION_DISCONNECTED", () {
+      print("Connection Disconnected");
+    });
+
+    _connection.connect();
   }
 
   void replaceChild(JitsiRemoteTrack remoteTrack) {
