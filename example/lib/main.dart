@@ -8,7 +8,6 @@ import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
 import 'package:sariska_media_flutter_sdk/JitsiRemoteTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
-import 'package:sariska_media_flutter_sdk/Track.dart';
 import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
 import 'package:get/get.dart';
@@ -28,7 +27,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   final _sariskaMediaTransport = SariskaMediaTransport();
   String token = 'unknown';
   String streamURL = '';
@@ -190,13 +188,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initPlatformState() async {
+
     try {
       token = await generateToken();
-      String platformVersion =
-          await _sariskaMediaTransport.getPlatformVersion() ??
-              'Unknown platform version';
 
       _sariskaMediaTransport.initializeSdk();
+
       setupLocalStream();
 
       final _connection = Connection(token, "random", false);
@@ -206,7 +203,6 @@ class _MyAppState extends State<MyApp> {
 
         _conference.addEventListener("CONFERENCE_JOINED", () {
           print("Conference joined from Swift and Android");
-          print("Local Track length: " + localtracks.length.toString());
           for (JitsiLocalTrack track in localtracks) {
             _conference.addTrack(track);
           }
@@ -214,8 +210,10 @@ class _MyAppState extends State<MyApp> {
 
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
-          if (remoteTrack.getStreamURL() == streamURL) {
-            return;
+          for (JitsiLocalTrack track in localtracks){
+            if (track.getStreamURL() == remoteTrack.getStreamURL()){
+              return;
+            }
           }
           if (remoteTrack.getType() == "audio") {
             return;
@@ -247,7 +245,6 @@ class _MyAppState extends State<MyApp> {
     Map<String, dynamic> options = {};
     options["audio"] = true;
     options["video"] = true;
-
     _sariskaMediaTransport.createLocalTracks(options, (tracks) {
       localtracks = tracks;
       for (JitsiLocalTrack track in localtracks) {
@@ -258,48 +255,6 @@ class _MyAppState extends State<MyApp> {
         }
       }
     });
-
-    startConnection();
-  }
-
-  void startConnection() async {
-    token = await generateToken();
-    Connection _connection =
-    _sariskaMediaTransport.jitsiConnection(token, "ramdon", false);
-
-    _connection.addEventListener("CONNECTION_ESTABLISHED", () {
-      Conference _conference = _connection.initJitsiConference();
-
-      _conference.addEventListener("CONFERENCE_JOINED", () {
-        print("Conference Joined sdasdsa");
-        print("track id" + localtracks[1].getType());
-        _conference.addTrack(localtracks[1]);
-      });
-
-      _conference.addEventListener("TRACK_ADDED", (track) {
-        JitsiRemoteTrack remoteTrack = track;
-        if (remoteTrack.getStreamURL() == streamURL) {
-          return;
-        }
-        if (remoteTrack.getType() == "audio") {
-          return;
-        }
-        streamURL = remoteTrack.getStreamURL();
-        replaceChild(remoteTrack);
-      });
-
-      _conference.join();
-    });
-
-    _connection.addEventListener("CONNECTION_FAILED", () {
-      print("Connection Failed");
-    });
-
-    _connection.addEventListener("CONNECTION_DISCONNECTED", () {
-      print("Connection Disconnected");
-    });
-
-    _connection.connect();
   }
 
   void replaceChild(JitsiRemoteTrack remoteTrack) {

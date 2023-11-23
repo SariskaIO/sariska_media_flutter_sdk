@@ -5,22 +5,44 @@ import io.sariska.sdk.JitsiLocalTrack;
 import java.util.Map;
 class TrackManager {
     public void mute(Map<String, Object> params) {
-        // TODO: Implement Mute
+        System.out.println("Inside track mute");
+        for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
+            if (track.getId().equals(params.get("trackId"))) {
+                track.mute();
+            }
+        }
     }
 
     public void unmute(Map<String, Object> params) {
-        // TODO: Implement unMute
+        for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
+            if (track.getId().equals(params.get("trackId"))) {
+                track.unmute();
+            }
+        }
     }
 
     public void switchCamera(Map<String, Object> params) {
-        // TODO: Implement switchCamera
+        // TODO: Implement check for audio
+        for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
+            if (track.getId().equals(params.get("trackId"))) {
+                track.unmute();
+            }
+        }
     }
 
     public void dispose(Map<String, Object> params) {
-        // TODO: Implement dispose
+        for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
+            if (track.getId().equals(params.get("trackId"))) {
+                track.dispose();
+            }
+        }
     }
 
-    public void destroy() {
-        // TODO: Implementn destroy
+    public void destroy(Map<String, Object> params) {
+        for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
+            if (track.getId().equals(params.get("trackId"))) {
+                track.dispose();
+            }
+        }
     }
 }

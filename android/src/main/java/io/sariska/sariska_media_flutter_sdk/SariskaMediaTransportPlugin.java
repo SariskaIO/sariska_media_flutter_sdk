@@ -38,6 +38,8 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   private Context applicationContext;
   private ConnectionPlugin connectionPlugin;
   private ConferencePlugin conferencePlugin;
+
+  private TrackPlugin trackPlugin;
   private Handler handler = new Handler(Looper.getMainLooper());;
 
   @Override
@@ -49,6 +51,7 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     applicationContext = flutterPluginBinding.getApplicationContext();
     connectionPlugin = new ConnectionPlugin(flutterPluginBinding.getBinaryMessenger());
     conferencePlugin = new ConferencePlugin(flutterPluginBinding.getBinaryMessenger());
+    trackPlugin = new TrackPlugin(flutterPluginBinding.getBinaryMessenger());
 
     FlutterEngine flutterEngine = flutterPluginBinding.getFlutterEngine();
     PlatformViewRegistry registry = flutterEngine.getPlatformViewsController().getRegistry();
@@ -85,10 +88,10 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   }
 
   private void createLocalTracks(Map<String, Object> options){
-    System.out.println("Innnnnnnnnnnn");
     Bundle bundle = new Bundle();
     bundle.putBoolean("audio", (Boolean) options.get("audio"));
     bundle.putBoolean("video", (Boolean) options.get("video"));
+    bundle.putInt("resolution", 240);
     SariskaMediaTransport.createLocalTracks(bundle, tracks ->{
       System.out.println("When native side CT work");
       localTracks = tracks;
