@@ -91,7 +91,6 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     Bundle bundle = new Bundle();
     bundle.putBoolean("audio", (Boolean) options.get("audio"));
     bundle.putBoolean("video", (Boolean) options.get("video"));
-    bundle.putInt("resolution", 240);
     SariskaMediaTransport.createLocalTracks(bundle, tracks ->{
       System.out.println("When native side CT work");
       localTracks = tracks;

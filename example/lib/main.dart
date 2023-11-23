@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -35,6 +36,9 @@ class _MyAppState extends State<MyApp> {
   JitsiLocalTrack? localTrack;
   bool isAudioOn = true;
   bool isVideoOn = true;
+
+  late Conference _conference;
+  late Connection _connection;
 
   @override
   void initState() {
@@ -146,7 +150,10 @@ class _MyAppState extends State<MyApp> {
                               ),
                               buildEndCallButton(
                                 onPressed: () {
-                                  Get.offAll(const MyApp());
+                                  print("Ending call");
+                                  _conference.leave();
+                                  _connection.disconnect();
+                                  exit(0);
                                 },
                               ),
                               buildCustomButton(
@@ -196,10 +203,10 @@ class _MyAppState extends State<MyApp> {
 
       setupLocalStream();
 
-      final _connection = Connection(token, "random", false);
+      _connection = Connection(token, "random", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
-        Conference _conference = _connection.initJitsiConference();
+        _conference = _connection.initJitsiConference();
 
         _conference.addEventListener("CONFERENCE_JOINED", () {
           print("Conference joined from Swift and Android");
@@ -245,6 +252,7 @@ class _MyAppState extends State<MyApp> {
     Map<String, dynamic> options = {};
     options["audio"] = true;
     options["video"] = true;
+
     _sariskaMediaTransport.createLocalTracks(options, (tracks) {
       localtracks = tracks;
       for (JitsiLocalTrack track in localtracks) {
