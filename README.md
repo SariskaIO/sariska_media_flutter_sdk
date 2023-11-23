@@ -19,6 +19,25 @@ Sariska's Media SDK for Flutter is the easiest way to develop easily scalable,  
 
 For detailed documentation on how to integrate the SDK for your live video applications, checkout [here](https://docs.sariska.io/media/development/dart)
 
+## Instructions on how to run the demo app
+
+1. Go to example/lib/Generatetoken.dart
+2. Place your api key
+   ```
+   'apiKey': "{Your-api-key}",
+   ```
+3. Go to example/lib/main.dart
+4. Change the room name in place of the placeholder
+    ```
+   _connection = Connection(token, "{your-room-name}", false);           
+   ```
+5. Flutter pub get
+6. Run the application
+
+## Sample Screenshot of the demo
+
+-- TBD
+
 ## Support 
 If you are looking for support, reach out at [support@sariska.io](support@sariska.io)
 
