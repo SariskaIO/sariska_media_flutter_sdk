@@ -34,9 +34,9 @@ For detailed documentation on how to integrate the SDK for your live video appli
 5. Flutter pub get
 6. Run the application
 
-## Sample Screenshot of the demo
+## Demo walkthrough video
 
--- TBD
+https://github.com/SariskaIO/Sariska-Media-Flutter-SDK/assets/22401307/81f2c349-57e7-448d-a36e-5ad3ac1ad5e0
 
 ## Support 
 If you are looking for support, reach out at [support@sariska.io](support@sariska.io)
