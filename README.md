@@ -36,7 +36,9 @@ For detailed documentation on how to integrate the SDK for your live video appli
 
 ## Demo walkthrough video
 
-https://github.com/SariskaIO/Sariska-Media-Flutter-SDK/assets/22401307/81f2c349-57e7-448d-a36e-5ad3ac1ad5e0
+https://github.com/SariskaIO/Sariska-Media-Flutter-SDK/assets/22401307/583f86aa-375f-4670-b778-6350d928f383
+
+
 
 ## Support 
 If you are looking for support, reach out at [support@sariska.io](support@sariska.io)
