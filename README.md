@@ -1,15 +1,45 @@
 # sariska_media_flutter_sdk
 
-A new Flutter plugin project.
+Sariska Media Flutter SDK provides powerful Dart API's for developing real-time applications for audio and video calling.
+
+## Overview
+
+From communication to streaming to interactivity, SARISKA offers a comprehensive tech stack to build everything from tiny applications to endless worlds through simple, fast, and secure APIs and SDKs helping you to get from development to launch in a week.
 
 ## Getting Started
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+Sariska's Media SDK for Flutter is the easiest way to develop easily scalable,  live video applications. This SDK supports developing Android and iOS application in just 6 easy steps
 
-For help getting started with Flutter development, view the
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Initialize SDK
+2. Create Connection
+3. Create Conference
+4. Capture Local Tracks
+5. Capture Remote Tracks
+6. Play Tracks
+
+For detailed documentation on how to integrate the SDK for your live video applications, checkout [here](https://docs.sariska.io/media/development/dart)
+
+## Instructions on how to run the demo app
+
+1. Go to example/lib/Generatetoken.dart
+2. Place your api key
+   ```
+   'apiKey': "{Your-api-key}",
+   ```
+3. Go to example/lib/main.dart
+4. Change the room name in place of the placeholder
+    ```
+   _connection = Connection(token, "{your-room-name}", false);           
+   ```
+5. Flutter pub get
+6. Run the application
+
+## Demo walkthrough video
+
+https://github.com/SariskaIO/Sariska-Media-Flutter-SDK/assets/22401307/81f2c349-57e7-448d-a36e-5ad3ac1ad5e0
+
+## Support 
+If you are looking for support, reach out at [support@sariska.io](support@sariska.io)
+
+
 

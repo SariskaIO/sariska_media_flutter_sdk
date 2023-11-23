@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
@@ -8,6 +11,7 @@ import 'package:sariska_media_flutter_sdk/JitsiRemoteTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
 import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
+import 'package:get/get.dart';
 
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
@@ -16,20 +20,25 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
-
   static late LocalTrackCallback localTrackCallback;
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   final _sariskaMediaTransport = SariskaMediaTransport();
   String token = 'unknown';
   String streamURL = '';
+  List<JitsiRemoteTrack> remoteTracks = [];
+  List<JitsiLocalTrack> localtracks = [];
+  JitsiLocalTrack? localTrack;
+  bool isAudioOn = true;
+  bool isVideoOn = true;
 
+  late Conference _conference;
+  late Connection _connection;
 
   @override
   void initState() {
@@ -37,43 +46,187 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Stack(
+          children: [
+            if (localTrack != null)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: WebRTCView(
+                  localTrack: localTrack!,
+                  mirror: true,
+                  objectFit: 'cover',
+                ),
+              ),
+            Positioned(
+              bottom: 140,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: remoteTracks.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 2.0, right: 2.0),
+                      child: Container(
+                        width: 120,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: WebRTCView(
+                          localTrack: remoteTracks[index],
+                          mirror: true,
+                          objectFit: 'cover',
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(30),
+                    clipBehavior: Clip.antiAlias,
+                    color: Colors.transparent,
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaY: 20,
+                        sigmaX: 20,
+                      ),
+                      child: InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 20,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              buildCustomButton(
+                                onPressed: () {
+                                  setState(() {
+                                    for (JitsiLocalTrack track in localtracks) {
+                                      if (track.getType() == "audio") {
+                                        if (isAudioOn) {
+                                          track.mute();
+                                          isAudioOn = !isAudioOn;
+                                        } else {
+                                          track.unmute();
+                                          isAudioOn = !isAudioOn;
+                                        }
+                                        break;
+                                      }
+                                    }
+                                  });
+                                },
+                                icon: isAudioOn
+                                    ? IconlyLight.voice
+                                    : Icons.mic_off_outlined,
+                                color: Colors.transparent,
+                              ),
+                              buildEndCallButton(
+                                onPressed: () {
+                                  print("Ending call");
+                                  _conference.leave();
+                                  _connection.disconnect();
+                                  exit(0);
+                                },
+                              ),
+                              buildCustomButton(
+                                onPressed: () {
+                                  setState(() {
+                                    for (JitsiLocalTrack track in localtracks) {
+                                      if (track.getType() == "video") {
+                                        if (isVideoOn) {
+                                          track.mute();
+                                          isVideoOn = !isVideoOn;
+                                        } else {
+                                          track.unmute();
+                                          isVideoOn = !isVideoOn;
+                                        }
+                                        break;
+                                      }
+                                    }
+                                  });
+                                },
+                                icon: isVideoOn
+                                    ? IconlyLight.video
+                                    : Icons.videocam_off_outlined,
+                                color: Colors.transparent,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+      ),
+    );
+  }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
 
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
     try {
       token = await generateToken();
-      // For makeing sure bridge is working fine.
-      platformVersion = await _sariskaMediaTransport.getPlatformVersion() ?? 'Unknown platform version';
 
-      // Initialize Sariska Media Tranasport
       _sariskaMediaTransport.initializeSdk();
 
       setupLocalStream();
 
-      //Create Connection
-      final _connection = Connection(token, "dipak", false);
+      _connection = Connection(token, "random", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
-        Conference _conference = _connection.initJitsiConference();
+        _conference = _connection.initJitsiConference();
 
-        _conference.addEventListener("CONFERENCE_JOINED", (){
-          print("Conference Joined");
+        _conference.addEventListener("CONFERENCE_JOINED", () {
+          print("Conference joined from Swift and Android");
+          for (JitsiLocalTrack track in localtracks) {
+            _conference.addTrack(track);
+          }
         });
 
-        _conference.addEventListener("TRACK_ADDED", (track){
+        _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
-          if(remoteTrack.getStreamURL() == streamURL){
-            return;
+          for (JitsiLocalTrack track in localtracks){
+            if (track.getStreamURL() == remoteTrack.getStreamURL()){
+              return;
+            }
           }
-          if(remoteTrack.getType() == "audio"){
+          if (remoteTrack.getType() == "audio") {
             return;
           }
           streamURL = remoteTrack.getStreamURL();
-          replaceChild(streamURL);
+          replaceChild(remoteTrack);
         });
 
         _conference.join();
@@ -89,87 +242,82 @@ class _MyAppState extends State<MyApp> {
 
       _connection.connect();
 
+      setState(() {});
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      print("Failed to get platform version.");
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
-  void setupLocalStream(){
-    Map<String, dynamic> options = new Map();
+  void setupLocalStream() {
+    Map<String, dynamic> options = {};
     options["audio"] = true;
     options["video"] = true;
-    List<JitsiLocalTrack> localtracks = [];
-    _sariskaMediaTransport.createLocalTracks(options, (tracks){
-      print("Inside Create Local Tracks");
+
+    _sariskaMediaTransport.createLocalTracks(options, (tracks) {
       localtracks = tracks;
-      for(JitsiLocalTrack track in localtracks){
-        if(track.getType() == "video"){
-          streamURL = track.getStreamURL();
-          //replaceChild(streamURL);
+      for (JitsiLocalTrack track in localtracks) {
+        if (track.getType() == "video") {
+          setState(() {
+            localTrack = track;
+          });
         }
       }
     });
   }
 
-  Widget _currentChild = PlaceholderWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: _currentChild,
-      ),
-    );
-  }
-
-
-  void replaceChild(String streamUrl) {
+  void replaceChild(JitsiRemoteTrack remoteTrack) {
     setState(() {
-      _currentChild = UpdatedChildWidget(streamUrl: streamURL);
+      remoteTracks.add(remoteTrack);
     });
   }
-}
-class PlaceholderWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Placeholder Widget'),
-    );
-  }
-}
 
-class UpdatedChildWidget extends StatelessWidget {
-  final String streamUrl;
-  const UpdatedChildWidget({required this.streamUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 300,
-        height: 200,
-        child: buildWebRTCView(),
+  Widget buildCustomButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.transparent,
+      ),
+      child: InkWell(
+        onTap: onPressed,
+        customBorder: const CircleBorder(),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+          ),
+          child: Icon(
+            icon,
+            color: Colors.black,
+            size: 30,
+          ),
+        ),
       ),
     );
   }
-  WebRTCView buildWebRTCView() {
-    return WebRTCView(
-      streamURL: streamUrl,
-      mirror: true,
-      objectFit: 'cover',
+
+  Widget buildEndCallButton({required VoidCallback onPressed}) {
+    return Container(
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.red,
+      ),
+      child: InkWell(
+        onTap: onPressed,
+        customBorder: const CircleBorder(),
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          child: const Icon(
+            Icons.call_end,
+            color: Colors.white,
+            size: 40,
+          ),
+        ),
+      ),
     );
   }
 }
-

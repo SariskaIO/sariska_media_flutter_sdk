@@ -33,20 +33,25 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   private MethodChannel methodChannel;
   private EventChannel eventChannel;
   private EventChannel.EventSink eventSink;
+
+  public static List<JitsiLocalTrack> localTracks = new ArrayList<JitsiLocalTrack>();
   private Context applicationContext;
   private ConnectionPlugin connectionPlugin;
   private ConferencePlugin conferencePlugin;
+
+  private TrackPlugin trackPlugin;
   private Handler handler = new Handler(Looper.getMainLooper());;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    methodChannel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "sariska_media_flutter_sdk");
+    methodChannel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "sariska_media_transport_flutter");
     eventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), "sariskaMediaTransportEvent");
     eventChannel.setStreamHandler(this);
     methodChannel.setMethodCallHandler(this);
     applicationContext = flutterPluginBinding.getApplicationContext();
     connectionPlugin = new ConnectionPlugin(flutterPluginBinding.getBinaryMessenger());
     conferencePlugin = new ConferencePlugin(flutterPluginBinding.getBinaryMessenger());
+    trackPlugin = new TrackPlugin(flutterPluginBinding.getBinaryMessenger());
 
     FlutterEngine flutterEngine = flutterPluginBinding.getFlutterEngine();
     PlatformViewRegistry registry = flutterEngine.getPlatformViewsController().getRegistry();
@@ -83,12 +88,12 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   }
 
   private void createLocalTracks(Map<String, Object> options){
-    System.out.println("Innnnnnnnnnnn");
     Bundle bundle = new Bundle();
     bundle.putBoolean("audio", (Boolean) options.get("audio"));
     bundle.putBoolean("video", (Boolean) options.get("video"));
     SariskaMediaTransport.createLocalTracks(bundle, tracks ->{
       System.out.println("When native side CT work");
+      localTracks = tracks;
       List<Map<String , Object>> localTracks = new ArrayList<>();
       for (JitsiLocalTrack track : tracks){
         Map<String , Object> map = new HashMap<>();

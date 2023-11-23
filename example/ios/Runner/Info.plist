@@ -4,6 +4,10 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to the camera for meetings.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to the microphone for meetings.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Sariska Media Flutter Sdk</string>
 	<key>CFBundleExecutable</key>

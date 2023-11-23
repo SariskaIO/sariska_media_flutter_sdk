@@ -1,53 +1,28 @@
-import 'dart:async';
-import 'package:flutter/services.dart';
-import 'WebRTCView.dart';
+import 'Track.dart';
 
-class JitsiRemoteTrack {
-
-  String type = '';
-
+/// Represents a remote track in Jitsi.
+class JitsiRemoteTrack extends Track {
+  /// The ID of the participant associated with this remote track.
   String participantId = '';
 
-  String id = '';
-
-  bool muted = false;
-
-  String streamURL = '';
-
-  JitsiRemoteTrack(Map<dynamic, dynamic> map) {
-    this.type = map["type"];
+  /// Constructs a [JitsiRemoteTrack] object from a map of properties.
+  ///
+  /// The [map] parameter is a map that contains the properties of the remote track.
+  JitsiRemoteTrack(Map<dynamic, dynamic> map) : super(map) {
     this.participantId = map["participantId"];
-    this.id = map["id"];
-    this.muted = map["muted"];
-    this.streamURL = map["streamURL"];
   }
 
-  String getType() {
-    return this.type;
-  }
-
-  String getStreamURL() {
-    return this.streamURL;
-  }
-
-  String getId() {
-    return this.id;
-  }
-
-  bool isMuted() {
-    return this.muted;
-  }
-
+  /// Retrieves the ID of the participant associated with this remote track.
+  ///
+  /// Returns the participant ID as a string.
   String getParticipantId() {
     return this.participantId;
   }
 
+  /// Checks if the remote track is local or not.
+  ///
+  /// Returns `false` indicating that the track is remote.
   bool isLocal() {
     return false;
   }
-
-  void setMuted(bool mute){
-    this.muted = mute;
-  }
-
 }

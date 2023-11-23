@@ -3,12 +3,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sariska_media_flutter_sdk/Track.dart';
 
 final Map<int, MethodChannel> _channels = {};
 
 class WebRTCView extends StatefulWidget {
 
-  final String streamURL;
+  final Track localTrack;
 
   final bool mirror;
 
@@ -22,7 +23,7 @@ class WebRTCView extends StatefulWidget {
 
   WebRTCView({
     Key? key,
-    required this.streamURL,
+    required this.localTrack,
     this.mirror = false,
     this.zOrder = 0,
     this.objectFit = "contain",
@@ -32,18 +33,19 @@ class WebRTCView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _RtcSurfaceViewState(streamURL);
+    return _RtcSurfaceViewState(localTrack);
   }
 }
 
 class _RtcSurfaceViewState extends State<WebRTCView> {
+  Track? track;
   int? _id;
   String? _streamURL;
   bool? _mirror;
   String? _objectFit;
   int? _zOrder;
 
-  _RtcSurfaceViewState(this._streamURL);
+  _RtcSurfaceViewState(this.track);
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +55,9 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
         child: AndroidView(
           viewType: 'SariskaSurfaceView',
           onPlatformViewCreated: onPlatformViewCreated,
-          hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
           creationParams: {
-            'streamURL': _streamURL,
+            'streamURL': track?.getStreamURL(),
             'mirror': _mirror,
             'objectFit': _objectFit,
             'zOrder': _zOrder
@@ -70,11 +72,15 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
         child: UiKitView(
           viewType: 'SariskaSurfaceView',
           onPlatformViewCreated: onPlatformViewCreated,
-          hitTestBehavior: PlatformViewHitTestBehavior.transparent,
           creationParams: {
-            'streamURL': _streamURL,
+            'streamURL': track?.getStreamURL(),
             'mirror': _mirror,
             'objectFit': _objectFit,
+            'trackId': track?.getId(),
+            'muted': track?.isMuted(),
+            'type': track?.getType(),
+//            'deviceId': track?.getDeviceId(),
+//            'participantId': track?.getParticipantId()
           },
           creationParamsCodec: const StandardMessageCodec(),
           gestureRecognizers: widget.gestureRecognizers,

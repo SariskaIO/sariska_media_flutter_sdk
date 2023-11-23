@@ -4,34 +4,57 @@
 import Foundation
 import sariska
 
-class ConnectionManager: Connection {
+class ConnectionManager: NSObject {
+
     private var emitter: (_ action: String, _ m: [String: Any?]?) -> Void
+
     var connection: Connection?
 
     init(_ emitter: @escaping (_ action: String, _ m: [String: Any?]?) -> Void) {
         self.emitter = emitter
     }
 
-    func Release() {
+    func release() {
         connection = nil
     }
 
-    @objc func createConnection(_ params: NSDictionary) {
-        //connection = Connection(params["token"] as! NSString)
-        connection = Connection.init(token: params["token"] as! String,
-                roomName: params["roomName"] as! String, isNightly: false
-        )
+    @objc public func createConnection(_ dictionary: [String: Any]){
+        connection = Connection.init(token: dictionary["token"] as! String,
+                    roomName: dictionary["roomName"] as! String, isNightly: false)
     }
 
-    @objc override func connect() {
-        connection?.connect()
-    }
-
-    @objc override func disconnect() {
+    @objc func destroy(){
         connection?.disconnect()
     }
 
-    @objc func removeFeature() {
+    @objc func connect(){
+        connection?.connect()
     }
 
+    @objc func disconnect(){
+        connection?.disconnect()
+    }
+
+    @objc func addFeature(_ features: [String: Any]){
+        connection?.addFeature(features)
+    }
+
+    @objc func removeFeature(_ features: [String: Any]){
+        connection?.removeFeature(features)
+    }
+
+    @objc func addConnectionListeners(_ dictionary: [String: Any]){
+        connection?.addEventListener(dictionary["event"] as! String, callback: { [self] in
+            print("Connection Established")
+            emitter(dictionary["event"] as! String, dictionary)
+        })
+    }
+
+    @objc func setToken(token: String){
+        connection?.setToken(token)
+    }
+
+    @objc func removeEventListener(event: String){
+        connection?.removeEventListener(event)
+    }
 }
