@@ -27,11 +27,18 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
-target 'Runner' do
+target 'sariska_media_flutter_sdk' do
   use_frameworks!
   use_modular_headers!
 
   pod 'sariska-media-transport', :git => 'https://github.com/SariskaIO/sariska-ios-sdk-releases.git', :branch => 'ios'
+end
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  #pod 'sariska-media-transport', :git => 'https://github.com/SariskaIO/sariska-ios-sdk-releases.git', :branch => 'ios'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

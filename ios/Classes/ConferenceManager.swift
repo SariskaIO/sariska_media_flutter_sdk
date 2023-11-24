@@ -26,7 +26,6 @@ public class ConferenceManager : NSObject{
 
     @objc public func join(){
         conference?.join()
-        conference?.addTrack(track: SariskaMediaTransportFlutterPlugin.localTrack ?? JitsiLocalTrack())
     }
 
     @objc func join(_ params: NSDictionary) {
@@ -74,9 +73,8 @@ public class ConferenceManager : NSObject{
     }
 
     @objc func addTrack(_ params: NSDictionary) {
-        var array = conference?.getLocalTracks()
-        for track in array as! NSMutableArray {
-            let track = track as! JitsiLocalTrack
+        var array = SariskaMediaTransportFlutterPlugin.localTracks
+        for track in array {
             if (track.getId() == ((params["trackId"] as! NSString) as String))  {
                 conference?.addTrack(track: track)
             }
