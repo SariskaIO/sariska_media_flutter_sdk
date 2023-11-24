@@ -1,3 +1,6 @@
+## 0.0.5
+* bug fixes
+
 ## 0.0.4
 * Sample code added for ios
 * bug fixes
