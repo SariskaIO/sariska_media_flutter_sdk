@@ -5,6 +5,7 @@ import sariska
 public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     private var eventSink: FlutterEventSink? = nil
     public static var localTrack: JitsiLocalTrack? = nil
+    public static var localTracks: [JitsiLocalTrack] = []
 
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         eventSink = events
@@ -25,6 +26,7 @@ public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin, Flutte
       let instance = SariskaMediaTransportFlutterPlugin()
       ConnectionPlugin.register(with: registrar)
       ConferencePlugin.register(with: registrar)
+      TrackPlugin.register(with: registrar)
       eventChannel.setStreamHandler(instance)
       registrar.addMethodCallDelegate(instance, channel: channel)
       registrar.register(SariskaSurfaceViewFactory(messenger: registrar.messenger()), withId: "SariskaSurfaceView")
@@ -40,9 +42,9 @@ public class SariskaMediaTransportFlutterPlugin: NSObject, FlutterPlugin, Flutte
         // Handle the method call and extract the arguments
         if let arguments = call.arguments as? [String: Any] {
             SariskaMediaTransport.createLocalTracks(arguments) { [self] tracks in
-                print("Inside create local")
                 var trackList  = [Any]()
                 for track in (tracks) {
+                    SariskaMediaTransportFlutterPlugin.localTracks.append(track as! JitsiLocalTrack)
                     let sometrack = track as! JitsiLocalTrack
                     if(sometrack.getType() == "video"){
                         print("video ssss")
