@@ -3,15 +3,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_audio_output/flutter_audio_output.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
 import 'package:sariska_media_flutter_sdk/JitsiRemoteTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
-import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
-import 'package:get/get.dart';
 
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
@@ -33,9 +32,12 @@ class _MyAppState extends State<MyApp> {
   String streamURL = '';
   List<JitsiRemoteTrack> remoteTracks = [];
   List<JitsiLocalTrack> localtracks = [];
+  late AudioInput _currentInput = const AudioInput("unknown", 0);
+  late List<AudioInput> _availableInputs = [];
+
   JitsiLocalTrack? localTrack;
   bool isAudioOn = true;
-  bool isVideoOn = true;
+  bool isSpeakerOn = false;
 
   late Conference _conference;
   late Connection _connection;
@@ -44,6 +46,23 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    init();
+  }
+
+  Future<void> init() async {
+    FlutterAudioOutput.setListener(() async {
+      await _getInput();
+      setState(() {});
+    });
+
+    await _getInput();
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  _getInput() async {
+    _currentInput = await FlutterAudioOutput.getCurrentOutput();
+    _availableInputs = await FlutterAudioOutput.getAvailableInputs();
   }
 
   @override
@@ -54,16 +73,18 @@ class _MyAppState extends State<MyApp> {
           children: [
             if (localTrack != null)
               Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: WebRTCView(
-                  localTrack: localTrack!,
-                  mirror: true,
-                  objectFit: 'cover',
-                ),
-              ),
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    color: Colors.black,
+                    child: const Icon(
+                      IconlyLight.profile,
+                      color: Colors.white,
+                      size: 100.0,
+                    ),
+                  )),
             Positioned(
               bottom: 140,
               left: 0,
@@ -80,12 +101,17 @@ class _MyAppState extends State<MyApp> {
                         width: 120,
                         height: 100,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(10),
+                          color: index % 2 == 0
+                              ? Colors.deepPurple.withAlpha(100)
+                              : Colors.redAccent.withAlpha(100),
                         ),
-                        child: WebRTCView(
-                          localTrack: remoteTracks[index],
-                          mirror: true,
-                          objectFit: 'cover',
+                        child: Icon(
+                          IconlyLight.user3,
+                          color: index % 2 == 0
+                              ? Colors.deepPurple
+                              : Colors.redAccent,
+                          size: 20.0,
                         ),
                       ),
                     );
@@ -157,25 +183,12 @@ class _MyAppState extends State<MyApp> {
                                 },
                               ),
                               buildCustomButton(
-                                onPressed: () {
-                                  setState(() {
-                                    for (JitsiLocalTrack track in localtracks) {
-                                      if (track.getType() == "video") {
-                                        if (isVideoOn) {
-                                          track.mute();
-                                          isVideoOn = !isVideoOn;
-                                        } else {
-                                          track.unmute();
-                                          isVideoOn = !isVideoOn;
-                                        }
-                                        break;
-                                      }
-                                    }
-                                  });
+                                onPressed: () async {
+                                  toggleSpeaker();
                                 },
-                                icon: isVideoOn
-                                    ? IconlyLight.video
-                                    : Icons.videocam_off_outlined,
+                                icon: isSpeakerOn
+                                    ? IconlyLight.volumeUp
+                                    : IconlyBold.volumeOff,
                                 color: Colors.transparent,
                               ),
                             ],
@@ -189,13 +202,12 @@ class _MyAppState extends State<MyApp> {
             ),
           ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
       ),
     );
   }
 
   Future<void> initPlatformState() async {
-
     try {
       token = await generateToken();
 
@@ -203,7 +215,7 @@ class _MyAppState extends State<MyApp> {
 
       setupLocalStream();
 
-      _connection = Connection(token, "{your-room-name}", false);
+      _connection = Connection(token, "gaurav", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();
@@ -211,18 +223,20 @@ class _MyAppState extends State<MyApp> {
         _conference.addEventListener("CONFERENCE_JOINED", () {
           print("Conference joined from Swift and Android");
           for (JitsiLocalTrack track in localtracks) {
-            _conference.addTrack(track);
+            if (track.getType() == "audio") {
+              _conference.addTrack(track);
+            }
           }
         });
 
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
-          for (JitsiLocalTrack track in localtracks){
-            if (track.getStreamURL() == remoteTrack.getStreamURL()){
+          for (JitsiLocalTrack track in localtracks) {
+            if (track.getStreamURL() == remoteTrack.getStreamURL()) {
               return;
             }
           }
-          if (remoteTrack.getType() == "audio") {
+          if (remoteTrack.getType() == "video") {
             return;
           }
           streamURL = remoteTrack.getStreamURL();
@@ -251,12 +265,12 @@ class _MyAppState extends State<MyApp> {
   void setupLocalStream() {
     Map<String, dynamic> options = {};
     options["audio"] = true;
-    options["video"] = true;
+    options["video"] = false;
 
     _sariskaMediaTransport.createLocalTracks(options, (tracks) {
       localtracks = tracks;
       for (JitsiLocalTrack track in localtracks) {
-        if (track.getType() == "video") {
+        if (track.getType() == "audio") {
           setState(() {
             localTrack = track;
           });
@@ -292,7 +306,7 @@ class _MyAppState extends State<MyApp> {
           ),
           child: Icon(
             icon,
-            color: Colors.black,
+            color: Colors.white,
             size: 30,
           ),
         ),
@@ -319,5 +333,22 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  void toggleSpeaker() async {
+    await _getInput();
+    if (_currentInput.port == AudioPort.speaker) {
+      isSpeakerOn = await FlutterAudioOutput.changeToReceiver();
+      setState(() {
+        isSpeakerOn = false;
+      });
+      print("Changed to Receiver: $isSpeakerOn");
+    } else {
+      isSpeakerOn = await FlutterAudioOutput.changeToSpeaker();
+      setState(() {
+        isSpeakerOn = true;
+      });
+      print("Changed to Speaker: $isSpeakerOn");
+    }
   }
 }
