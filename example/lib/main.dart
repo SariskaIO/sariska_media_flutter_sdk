@@ -15,11 +15,18 @@ import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+     MaterialApp(
+      home: RoomNamePage(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key, required this.roomName}) : super(key: key);
+
+  final String roomName;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -68,6 +75,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Stack(
           children: [
@@ -215,7 +223,7 @@ class _MyAppState extends State<MyApp> {
 
       setupLocalStream();
 
-      _connection = Connection(token, "{your-room-name}", false);
+      _connection = Connection(token, widget.roomName, false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();
@@ -350,5 +358,56 @@ class _MyAppState extends State<MyApp> {
       });
       print("Changed to Speaker: $isSpeakerOn");
     }
+  }
+}
+
+class RoomNamePage extends StatefulWidget {
+  const RoomNamePage({Key? key}) : super(key: key);
+
+  @override
+  _RoomNamePageState createState() => _RoomNamePageState();
+}
+
+class _RoomNamePageState extends State<RoomNamePage> {
+  final TextEditingController _roomNameController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+
+      type: MaterialType.transparency, // or any other theme configuration
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Enter Room Name'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _roomNameController,
+                decoration: const InputDecoration(labelText: 'Room Name'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final roomName = _roomNameController.text.trim();
+                  if (roomName.isNotEmpty) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyApp(roomName: roomName),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Enter Room'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
