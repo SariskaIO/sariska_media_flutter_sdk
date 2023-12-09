@@ -1,14 +1,17 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_audio_output (0.0.1):
+    - Flutter
   - integration_test (0.0.1):
     - Flutter
-  - sariska-media-transport (1.0.3)
+  - sariska-media-transport (1.1.8)
   - sariska_media_flutter_sdk (0.0.1):
     - Flutter
     - sariska-media-transport
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_audio_output (from `.symlinks/plugins/flutter_audio_output/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - sariska_media_flutter_sdk (from `.symlinks/plugins/sariska_media_flutter_sdk/ios`)
 
@@ -19,6 +22,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_audio_output:
+    :path: ".symlinks/plugins/flutter_audio_output/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
   sariska_media_flutter_sdk:
@@ -26,10 +31,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_audio_output: c09cf390073f4c2ebd2eeed1420e2e3ba46f9b5e
   integration_test: 13825b8a9334a850581300559b8839134b124670
-  sariska-media-transport: 6938f09a3e6bb0ed066159bd2c18e52d07e78bb9
+  sariska-media-transport: 86779466f8ea3f5ad1080a5a0eeea8c070f04ee2
   sariska_media_flutter_sdk: ce0dc6fc12593c28528ce1d8781ee471ea117bb7
 
-PODFILE CHECKSUM: c74f68fcbc77a0fa7d0c6d3800f21f40ef9a207f
+PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
 
 COCOAPODS: 1.12.1
