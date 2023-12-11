@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_audio_output/flutter_audio_output.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
@@ -16,7 +17,7 @@ typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
 void main() {
   runApp(
-     MaterialApp(
+    MaterialApp(
       home: RoomNamePage(),
       debugShowCheckedModeBanner: false,
     ),
@@ -372,9 +373,26 @@ class _RoomNamePageState extends State<RoomNamePage> {
   final TextEditingController _roomNameController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    webViewMethod();
+  }
+
+  Future webViewMethod() async {
+    print('In Microphone permission method');
+    WidgetsFlutterBinding.ensureInitialized();
+    await Permission.microphone.request();
+  }
+
+  // Future WebViewMethodForCamera() async {
+  //   print('In Camera permission method');
+  //   WidgetsFlutterBinding.ensureInitialized();
+  //   await Permission.camera.request();
+  // }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
-
       type: MaterialType.transparency, // or any other theme configuration
       child: Scaffold(
         appBar: AppBar(

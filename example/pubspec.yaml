@@ -33,6 +33,7 @@ dependencies:
   flutter_iconly: 1.0.2
   get: 4.6.6
   flutter_audio_output: 0.0.2
+  permission_handler: ^11.1.0
 
 dev_dependencies:
   integration_test:
@@ -52,7 +53,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
