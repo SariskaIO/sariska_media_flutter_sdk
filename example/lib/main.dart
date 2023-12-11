@@ -382,13 +382,14 @@ class _RoomNamePageState extends State<RoomNamePage> {
     print('In Microphone permission method');
     WidgetsFlutterBinding.ensureInitialized();
     await Permission.microphone.request();
+    WebViewMethodForCamera();
   }
 
-  // Future WebViewMethodForCamera() async {
-  //   print('In Camera permission method');
-  //   WidgetsFlutterBinding.ensureInitialized();
-  //   await Permission.camera.request();
-  // }
+  Future WebViewMethodForCamera() async {
+    print('In Camera permission method');
+    WidgetsFlutterBinding.ensureInitialized();
+    await Permission.camera.request();
+  }
 
   @override
   Widget build(BuildContext context) {
