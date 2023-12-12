@@ -25,7 +25,7 @@ class TrackManager {
         // TODO: Implement check for audio
         for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
             if (track.getId().equals(params.get("trackId"))) {
-                track.unmute();
+                track.switchCamera();
             }
         }
     }

@@ -162,10 +162,13 @@ class _MyAppState extends State<MyApp> {
                                     for (JitsiLocalTrack track in localtracks) {
                                       if (track.getType() == "video") {
                                         if (isVideoOn) {
-                                          track.mute();
+                                          //track.mute();
+                                          track.switchCamera();
+                                          _conference.sendMessage("Random messafe here");
                                           isVideoOn = !isVideoOn;
                                         } else {
-                                          track.unmute();
+                                          //track.unmute();
+                                          track.switchCamera();
                                           isVideoOn = !isVideoOn;
                                         }
                                         break;
@@ -203,7 +206,7 @@ class _MyAppState extends State<MyApp> {
 
       setupLocalStream();
 
-      _connection = Connection(token, "{your-room-name}", false);
+      _connection = Connection(token, "randomtest", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();

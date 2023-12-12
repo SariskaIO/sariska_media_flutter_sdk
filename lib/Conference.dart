@@ -258,9 +258,9 @@ class Conference {
 
   void sendMessage(String message, [String to = '']) {
     if (to != '') {
-      _invokeMethod('sendMessage', {message: 'message', 'to': to});
+      _invokeMethod('sendMessage', {'message': message, 'to': to});
     } else {
-      _invokeMethod('sendMessage', {message: 'message'});
+      _invokeMethod('sendMessage', {'message': message});
     }
   }
 

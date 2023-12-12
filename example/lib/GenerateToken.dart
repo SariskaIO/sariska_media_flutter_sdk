@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 Future<String> generateToken() async {
   final body = jsonEncode({
-    'apiKey': "{your-api-key}",
+    'apiKey': "2e9702aabed316542f37c6fb2ffea6cf68c342a889aa308d7b8fb5",
   });
   //final headers = {"Content-Type": "application/json"};
   var url = 'https://api.sariska.io/api/v1/misc/generate-token';

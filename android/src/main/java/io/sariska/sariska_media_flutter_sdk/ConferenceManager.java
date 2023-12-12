@@ -53,9 +53,13 @@ public class ConferenceManager extends Conference {
 
         if (to != null && !to.isEmpty()) {
             conference.sendMessage(message, to);
+            System.out.println("Sending message");
         } else {
             conference.sendMessage(message);
+            System.out.println(message);
+            System.out.println("Sending message 1");
         }
+
     }
 
     public void setLastN(Map<String, ?> params) {
