@@ -1,3 +1,7 @@
+## 0.0.6
+* fix: sendMessage bug
+* Downgraded minimum sdk requirement
+
 ## 0.0.5
 * bug fixes
 
