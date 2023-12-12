@@ -1,3 +1,6 @@
+## 0.0.7
+* fix: Create Local Tracks bug when there is only audio or video
+
 ## 0.0.6
 * fix: sendMessage bug
 * Downgraded minimum sdk requirement
