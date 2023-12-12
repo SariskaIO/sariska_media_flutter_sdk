@@ -62,8 +62,8 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
   void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback) {
     localTrackCallback = callback;
     _invokeMethod('createLocalTracks', {
-      'audio': true,
-      'video': true
+      'audio': options['audio'],
+      'video': options['video']
     });
   }
 
