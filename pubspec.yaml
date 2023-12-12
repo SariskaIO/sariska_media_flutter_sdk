@@ -1,10 +1,10 @@
 name: sariska_media_flutter_sdk
 description: Sariska Media Flutter SDK provides powerful Dart API's for developing real-time applications for audio and video calling.
-version: 0.0.5
+version: 0.0.6
 homepage: https://github.com/SariskaIO/Sariska-Media-Flutter-SDK
 
 environment:
-  sdk: '>=3.0.2 <4.0.0'
+  sdk: '>=2.18.0 <4.0.0'
   flutter: ">=3.3.0"
 
 dependencies:
