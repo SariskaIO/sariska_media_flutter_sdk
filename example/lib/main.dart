@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
@@ -14,6 +15,7 @@ import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
 
 typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
+const Color themeColor = Color(0xff4050B5);
 
 void main() {
   runApp(const MaterialApp(
@@ -57,7 +59,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Stack(
           children: [
-            if (localTrack != null)
+            if (localTrack != null && isVideoOn)
               Positioned(
                 top: 0,
                 left: 0,
@@ -67,6 +69,20 @@ class _MyAppState extends State<MyApp> {
                   localTrack: localTrack!,
                   mirror: true,
                   objectFit: 'cover',
+                ),
+              ),
+            if (localTrack != null && !isVideoOn)
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Center(
+                  child: Icon(
+                    IconlyLight.profile,
+                    size: 100,
+                    color: Colors.white, // Customize color as needed
+                  ),
                 ),
               ),
             Positioned(
@@ -194,7 +210,7 @@ class _MyAppState extends State<MyApp> {
             ),
           ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
       ),
     );
   }
@@ -361,19 +377,43 @@ class _RoomNamePageState extends State<RoomNamePage> {
       type: MaterialType.transparency, // or any other theme configuration
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Sariska.io'),
+          title: const Text(
+            'Sariska.io',
+            style: TextStyle(
+              color: themeColor,
+              fontSize: 30,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              const SizedBox(height: 20),
               TextField(
                 controller: _roomNameController,
-                decoration: const InputDecoration(labelText: 'Room Name'),
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(IconlyLight.video),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: themeColor, width: 2),
+                  ),
+                  labelText: "Room Name",
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: themeColor,
+                  textStyle: const TextStyle(color: Colors.white),
+                ),
                 onPressed: () {
                   final roomName = _roomNameController.text.trim();
                   if (roomName.isNotEmpty) {
@@ -383,9 +423,24 @@ class _RoomNamePageState extends State<RoomNamePage> {
                         builder: (context) => MyApp(roomName: roomName),
                       ),
                     );
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "Please Enter a room name",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
                   }
                 },
-                child: const Text('Enter Room'),
+                child: const Text(
+                  'Enter Room',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
               ),
             ],
           ),
