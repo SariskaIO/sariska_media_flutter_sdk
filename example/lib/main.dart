@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
@@ -16,11 +17,18 @@ import 'package:get/get.dart';
 typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MaterialApp(
+      home: const RoomNamePage(),
+      debugShowCheckedModeBanner: false,
+    )
+  );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key, required this.roomName}) : super(key: key);
+
+  final String roomName;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -203,7 +211,7 @@ class _MyAppState extends State<MyApp> {
 
       setupLocalStream();
 
-      _connection = Connection(token, "{your-room-name}", false);
+      _connection = Connection(token, "gaurav", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();
@@ -315,6 +323,76 @@ class _MyAppState extends State<MyApp> {
             Icons.call_end,
             color: Colors.white,
             size: 40,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RoomNamePage extends StatefulWidget {
+  const RoomNamePage({Key? key}) : super(key: key);
+
+  @override
+  _RoomNamePageState createState() => _RoomNamePageState();
+}
+
+class _RoomNamePageState extends State<RoomNamePage> {
+  final TextEditingController _roomNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    webViewMethod();
+  }
+
+  Future webViewMethod() async {
+    print('In Microphone permission method');
+    WidgetsFlutterBinding.ensureInitialized();
+    await Permission.microphone.request();
+    WebViewMethodForCamera();
+  }
+
+  Future WebViewMethodForCamera() async {
+    print('In Camera permission method');
+    WidgetsFlutterBinding.ensureInitialized();
+    await Permission.camera.request();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency, // or any other theme configuration
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Sariska.io'),
+
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _roomNameController,
+                decoration: const InputDecoration(labelText: 'Room Name'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final roomName = _roomNameController.text.trim();
+                  if (roomName.isNotEmpty) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyApp(roomName: roomName),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Enter Room'),
+              ),
+            ],
           ),
         ),
       ),
