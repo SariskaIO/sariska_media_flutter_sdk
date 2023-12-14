@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sariska_media_flutter_sdk/Conference.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'package:sariska_media_flutter_sdk/JitsiLocalTrack.dart';
@@ -11,16 +13,21 @@ import 'package:sariska_media_flutter_sdk/JitsiRemoteTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
 import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
-import 'package:get/get.dart';
 
-typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
+typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
+const Color themeColor = Color(0xff4050B5);
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    home: RoomNamePage(),
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key, required this.roomName}) : super(key: key);
+
+  final String roomName;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -52,7 +59,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Stack(
           children: [
-            if (localTrack != null)
+            if (localTrack != null && isVideoOn)
               Positioned(
                 top: 0,
                 left: 0,
@@ -62,6 +69,20 @@ class _MyAppState extends State<MyApp> {
                   localTrack: localTrack!,
                   mirror: true,
                   objectFit: 'cover',
+                ),
+              ),
+            if (localTrack != null && !isVideoOn)
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Center(
+                  child: Icon(
+                    IconlyLight.profile,
+                    size: 100,
+                    color: Colors.white, // Customize color as needed
+                  ),
                 ),
               ),
             Positioned(
@@ -189,13 +210,12 @@ class _MyAppState extends State<MyApp> {
             ),
           ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
       ),
     );
   }
 
   Future<void> initPlatformState() async {
-
     try {
       token = await generateToken();
 
@@ -203,7 +223,7 @@ class _MyAppState extends State<MyApp> {
 
       setupLocalStream();
 
-      _connection = Connection(token, "{your-room-name}", false);
+      _connection = Connection(token, "gaurav", false);
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();
@@ -217,8 +237,8 @@ class _MyAppState extends State<MyApp> {
 
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
-          for (JitsiLocalTrack track in localtracks){
-            if (track.getStreamURL() == remoteTrack.getStreamURL()){
+          for (JitsiLocalTrack track in localtracks) {
+            if (track.getStreamURL() == remoteTrack.getStreamURL()) {
               return;
             }
           }
@@ -315,6 +335,114 @@ class _MyAppState extends State<MyApp> {
             Icons.call_end,
             color: Colors.white,
             size: 40,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RoomNamePage extends StatefulWidget {
+  const RoomNamePage({Key? key}) : super(key: key);
+
+  @override
+  _RoomNamePageState createState() => _RoomNamePageState();
+}
+
+class _RoomNamePageState extends State<RoomNamePage> {
+  final TextEditingController _roomNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    webViewMethod();
+  }
+
+  Future webViewMethod() async {
+    print('In Microphone permission method');
+    WidgetsFlutterBinding.ensureInitialized();
+    await Permission.microphone.request();
+    WebViewMethodForCamera();
+  }
+
+  Future WebViewMethodForCamera() async {
+    print('In Camera permission method');
+    WidgetsFlutterBinding.ensureInitialized();
+    await Permission.camera.request();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency, // or any other theme configuration
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Sariska.io',
+            style: TextStyle(
+              color: themeColor,
+              fontSize: 30,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const SizedBox(height: 20),
+              TextField(
+                controller: _roomNameController,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(IconlyLight.video),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: themeColor, width: 2),
+                  ),
+                  labelText: "Room Name",
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: themeColor,
+                  textStyle: const TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  final roomName = _roomNameController.text.trim();
+                  if (roomName.isNotEmpty) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyApp(roomName: roomName),
+                      ),
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "Please Enter a room name",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  }
+                },
+                child: const Text(
+                  'Enter Room',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
