@@ -12,17 +12,14 @@ import 'package:sariska_media_flutter_sdk/JitsiRemoteTrack.dart';
 import 'package:sariska_media_flutter_sdk/SariskaMediaTransport.dart';
 import 'package:sariska_media_flutter_sdk/WebRTCView.dart';
 import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
-import 'package:get/get.dart';
 
-typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
+typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
 
 void main() {
-  runApp(
-    MaterialApp(
-      home: const RoomNamePage(),
-      debugShowCheckedModeBanner: false,
-    )
-  );
+  runApp(const MaterialApp(
+    home: RoomNamePage(),
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -203,7 +200,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initPlatformState() async {
-
     try {
       token = await generateToken();
 
@@ -225,8 +221,8 @@ class _MyAppState extends State<MyApp> {
 
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
-          for (JitsiLocalTrack track in localtracks){
-            if (track.getStreamURL() == remoteTrack.getStreamURL()){
+          for (JitsiLocalTrack track in localtracks) {
+            if (track.getStreamURL() == remoteTrack.getStreamURL()) {
               return;
             }
           }
@@ -366,7 +362,6 @@ class _RoomNamePageState extends State<RoomNamePage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Sariska.io'),
-
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
