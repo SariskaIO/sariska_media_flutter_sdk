@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_audio_output/flutter_audio_output.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -20,7 +21,7 @@ const Color themeColor = Color(0xff4050B5);
 void main() {
   runApp(const MaterialApp(
     home: RoomNamePage(),
-    debugShowCheckedModeBanner: false,
+    debugShowCheckedModeBanner: true,
   ));
 }
 
@@ -51,6 +52,26 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    init();
+  }
+
+  late AudioInput _currentInput = const AudioInput("unknown", 0);
+  bool isSpeakerOn = false;
+  bool isCameraSwitch = false;
+
+  Future<void> init() async {
+    FlutterAudioOutput.setListener(() async {
+      await _getInput();
+      setState(() {});
+    });
+
+    await _getInput();
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  _getInput() async {
+    _currentInput = await FlutterAudioOutput.getCurrentOutput();
   }
 
   @override
@@ -169,6 +190,24 @@ class _MyAppState extends State<MyApp> {
                                     : Icons.mic_off_outlined,
                                 color: Colors.transparent,
                               ),
+                              buildCustomButton(
+                                onPressed: () {
+                                  setState(() {
+                                    for (JitsiLocalTrack track in localtracks) {
+                                      if (track.getType() == "video") {
+                                        track.switchCamera();
+                                        localTrack = track;
+                                        isCameraSwitch = !isCameraSwitch;
+                                      }
+                                    }
+                                  });
+                                  setState(() {});
+                                },
+                                icon: isCameraSwitch
+                                    ? IconlyLight.camera
+                                    : Icons.switch_camera_outlined,
+                                color: Colors.transparent,
+                              ),
                               buildEndCallButton(
                                 onPressed: () {
                                   print("Ending call");
@@ -197,6 +236,15 @@ class _MyAppState extends State<MyApp> {
                                 icon: isVideoOn
                                     ? IconlyLight.video
                                     : Icons.videocam_off_outlined,
+                                color: Colors.transparent,
+                              ),
+                              buildCustomButton(
+                                onPressed: () async {
+                                  toggleSpeaker();
+                                },
+                                icon: isSpeakerOn
+                                    ? IconlyLight.volumeUp
+                                    : IconlyBold.volumeOff,
                                 color: Colors.transparent,
                               ),
                             ],
@@ -289,6 +337,23 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       remoteTracks.add(remoteTrack);
     });
+  }
+
+  void toggleSpeaker() async {
+    await _getInput();
+    if (_currentInput.port == AudioPort.speaker) {
+      isSpeakerOn = await FlutterAudioOutput.changeToReceiver();
+      setState(() {
+        isSpeakerOn = false;
+      });
+      print("Changed to Receiver: $isSpeakerOn");
+    } else {
+      isSpeakerOn = await FlutterAudioOutput.changeToSpeaker();
+      setState(() {
+        isSpeakerOn = true;
+      });
+      print("Changed to Speaker: $isSpeakerOn");
+    }
   }
 
   Widget buildCustomButton({
@@ -429,7 +494,7 @@ class _RoomNamePageState extends State<RoomNamePage> {
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.red,
+                        backgroundColor: Colors.yellow,
                         textColor: Colors.white,
                         fontSize: 16.0);
                   }
