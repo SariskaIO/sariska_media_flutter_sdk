@@ -1,3 +1,7 @@
+## 0.0.8
+* Fix: Fixes in example folder to enable release build
+* Dynamic room name assignment
+
 ## 0.0.7
 * fix: Create Local Tracks bug when there is only audio or video
 

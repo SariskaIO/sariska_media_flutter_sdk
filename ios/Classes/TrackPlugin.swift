@@ -26,7 +26,6 @@ public class TrackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler{
         if(manager == nil){
             manager = TrackManager()
         }
-        print("in here")
         
         if let params = call.arguments {
             // if there are parameters

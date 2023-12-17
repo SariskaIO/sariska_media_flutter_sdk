@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter/services.dart';
 import 'package:sariska_media_flutter_sdk/Track.dart';
 
@@ -49,4 +50,7 @@ class JitsiLocalTrack extends Track{
     _invokeMethod("dispose", {'trackId': this.getId()});
   }
 
+  void toggleSpeaker(bool onSpeaker){
+    _invokeMethod("toggleSpeaker", {'onSpeaker': onSpeaker});
+  }
 }
