@@ -154,7 +154,6 @@ class _MyAppState extends State<MyApp> {
                                       if (track.getType() == "audio") {
                                         if (isAudioOn) {
                                           track.mute();
-                                          track.toggleSpeaker(true);
                                           isAudioOn = !isAudioOn;
                                         } else {
                                           track.unmute();
