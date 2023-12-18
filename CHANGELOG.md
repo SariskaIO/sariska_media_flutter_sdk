@@ -1,3 +1,7 @@
+## 0.0.9
+* Feature: React Native In call manager added to the sdk
+* Feature: track.toggleSpeaker(Bool) added for speaker options
+
 ## 0.0.8
 * Fix: Fixes in example folder to enable release build
 * Dynamic room name assignment
