@@ -7,10 +7,10 @@ PODS:
     - Flutter
   - permission_handler_apple (9.1.1):
     - Flutter
-  - sariska-media-transport (1.1.8)
+  - sariska-media-transport (1.2.0)
   - sariska_media_flutter_sdk (0.0.1):
     - Flutter
-    - sariska-media-transport
+    - sariska-media-transport (~> 1.2.0)
   - Toast (4.0.0)
 
 DEPENDENCIES:
@@ -42,8 +42,8 @@ SPEC CHECKSUMS:
   fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
   integration_test: 13825b8a9334a850581300559b8839134b124670
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
-  sariska-media-transport: 86779466f8ea3f5ad1080a5a0eeea8c070f04ee2
-  sariska_media_flutter_sdk: ce0dc6fc12593c28528ce1d8781ee471ea117bb7
+  sariska-media-transport: a65fda4b77e6f9f5fdc4c55d24ffc5968dcbc1b8
+  sariska_media_flutter_sdk: e16c81229b3a432ab59f0d989fb28d8f284fc60b
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
 PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189

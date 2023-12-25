@@ -5,7 +5,6 @@ Future<String> generateToken() async {
   final body = jsonEncode({
     'apiKey': "{your-api-key}",
   });
-  //final headers = {"Content-Type": "application/json"};
   var url = 'https://api.sariska.io/api/v1/misc/generate-token';
   Uri uri = Uri.parse(url);
   final response = await http.post(uri,
@@ -14,7 +13,6 @@ Future<String> generateToken() async {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     var body = jsonDecode(response.body);
-    print(body);
     return body['token'];
   } else {
     // If the server did not return a 200 OK response,

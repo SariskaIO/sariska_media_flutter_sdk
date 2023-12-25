@@ -1,5 +1,8 @@
 package io.sariska.sariska_media_flutter_sdk;
 
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.zxcpoiu.incallmanager.InCallManagerModule;
+
 import io.sariska.sdk.SariskaMediaTransport;
 import io.sariska.sdk.JitsiLocalTrack;
 import java.util.Map;
@@ -42,6 +45,14 @@ class TrackManager {
         for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
             if (track.getId().equals(params.get("trackId"))) {
                 track.dispose();
+            }
+        }
+    }
+
+    public void toggleSpeaker(Map<String, Object> onSpeaker){
+        for (JitsiLocalTrack track : SariskaMediaTransportPlugin.localTracks) {
+            if (track.getType().equals("audio")){
+                track.toggleSpeaker((boolean)onSpeaker.get("onSpeaker"));
             }
         }
     }

@@ -49,5 +49,14 @@ public class TrackManager : NSObject{
                 }
             }
         }
+    
+    @objc func toggleSpeaker(_ params: [String: Any]){
+        for track in SariskaMediaTransportFlutterPlugin.localTracks {
+            if track.getType() == "audio" {
+                track.toggleSpeaker(params["onSpeaker"] as! Bool);
+            }
+        }
+    }
+    
 }
 

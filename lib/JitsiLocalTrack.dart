@@ -49,4 +49,7 @@ class JitsiLocalTrack extends Track{
     _invokeMethod("dispose", {'trackId': this.getId()});
   }
 
+  void toggleSpeaker(bool onSpeaker){
+    _invokeMethod("toggleSpeaker", {'onSpeaker': onSpeaker});
+  }
 }
