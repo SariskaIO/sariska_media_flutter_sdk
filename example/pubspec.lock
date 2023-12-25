@@ -70,6 +70,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_audio_output:
+    dependency: "direct main"
+    description:
+      name: flutter_audio_output
+      sha256: "5e24ea31211438c98b525bd91e3c80fa921b83ba510ddfb9ffb1d4dcf3fbe058"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   flutter_driver:
     dependency: transitive
     description: flutter
