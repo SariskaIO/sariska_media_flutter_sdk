@@ -1,5 +1,7 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_audio_output (0.0.1):
+    - Flutter
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
@@ -15,6 +17,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_audio_output (from `.symlinks/plugins/flutter_audio_output/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -28,6 +31,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_audio_output:
+    :path: ".symlinks/plugins/flutter_audio_output/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   integration_test:
@@ -39,6 +44,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_audio_output: c09cf390073f4c2ebd2eeed1420e2e3ba46f9b5e
   fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
   integration_test: 13825b8a9334a850581300559b8839134b124670
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
