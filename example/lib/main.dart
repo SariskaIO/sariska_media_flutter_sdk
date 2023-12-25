@@ -196,7 +196,6 @@ class _MyAppState extends State<MyApp> {
                                     for (JitsiLocalTrack track in localtracks) {
                                       if (track.getType() == "video") {
                                         track.switchCamera();
-                                        localTrack = track;
                                         isCameraSwitch = !isCameraSwitch;
                                       }
                                     }
@@ -240,7 +239,11 @@ class _MyAppState extends State<MyApp> {
                               ),
                               buildCustomButton(
                                 onPressed: () async {
-                                  toggleSpeaker();
+                                  if (isSpeakerOn) {
+                                    toggleSpeaker(false);
+                                  } else {
+                                    toggleSpeaker(true);
+                                  }
                                 },
                                 icon: isSpeakerOn
                                     ? IconlyLight.volumeUp
@@ -339,20 +342,13 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void toggleSpeaker() async {
-    await _getInput();
-    if (_currentInput.port == AudioPort.speaker) {
-      isSpeakerOn = await FlutterAudioOutput.changeToReceiver();
-      setState(() {
-        isSpeakerOn = false;
-      });
-      print("Changed to Receiver: $isSpeakerOn");
-    } else {
-      isSpeakerOn = await FlutterAudioOutput.changeToSpeaker();
-      setState(() {
-        isSpeakerOn = true;
-      });
-      print("Changed to Speaker: $isSpeakerOn");
+  void toggleSpeaker(bool isSpeaker) async {
+    for (JitsiLocalTrack track in localtracks) {
+      if (track.getType() == "audio") {
+        track.toggleSpeaker(isSpeaker);
+        isSpeakerOn = isSpeaker;
+        setState(() {});
+      }
     }
   }
 

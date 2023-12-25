@@ -29,7 +29,7 @@ public class TrackManager : NSObject{
             // TODO: Implement check for audio
             for track in SariskaMediaTransportFlutterPlugin.localTracks {
                 if track.trackId == params["trackId"] as? String {
-                    track.unmute()
+                    track.switchCamera()
                 }
             }
         }
