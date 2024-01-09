@@ -21,6 +21,7 @@ public class ConferenceManager extends Conference {
         System.out.println("Inside create conference");
         conference = new Conference();
     }
+    
     @Override
     public void join() {
         System.out.println("inside conference join");
@@ -30,6 +31,29 @@ public class ConferenceManager extends Conference {
     public void join(Map<String, ?> params) {
         conference.join((String) params.get("password"));
     }
+
+    public void joinLobby(Map<String, ?> params) {
+        String displayName = params.get("displayName");
+        String email = params.get("email");
+        conference.joinLobby(displayName, email);
+    }
+
+    public void enableLobby() {
+        conference.enableLobby();
+    }
+
+    public void disableLobby() {
+        conference.disableLobby();
+    }
+
+    public void lobbyDenyAccess(Map<String, ?> params){
+        conference.lobbyDenyAccess(params.get("participantId"));
+    }
+
+    public void lobbyApproveAccess(Map<String, ?> params){
+        conference.lobbyApproveAccess(params.get("participantId"));
+    }
+    
 
     public void grantOwner(Map<String, ?> params) {
         conference.grantOwner((String) params.get("id"));
@@ -432,11 +456,23 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "LOBBY_USER_JOINED":
-                // Handle lobby user joined case
+            conference.addEventListener(eventString, (id, participant) -> {
+                Participant participant1 = (Participant) participant;
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("displayName", participant1.getDisplayName());
+                participantMap.put("email", participant1.getEmail());
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
 
             case "LOBBY_USER_UPDATED":
-                // Handle lobby user updated case
+            conference.addEventListener(eventString, (id, participant) -> {
+                Participant participant1 = (Participant) participant;
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("displayName", participant1.getDisplayName());
+                participantMap.put("email", participant1.getEmail());
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
 
             case "MESSAGE_RECEIVED":
