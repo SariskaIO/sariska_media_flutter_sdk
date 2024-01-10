@@ -269,9 +269,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     try {
       token = await generateToken();
-
       _sariskaMediaTransport.initializeSdk();
-
       setupLocalStream();
 
       _connection = Connection(token, widget.roomName, false);
@@ -280,10 +278,29 @@ class _MyAppState extends State<MyApp> {
         _conference = _connection.initJitsiConference();
 
         _conference.addEventListener("CONFERENCE_JOINED", () {
-          print("Conference joined from Swift and Android");
           for (JitsiLocalTrack track in localtracks) {
             _conference.addTrack(track);
           }
+          _conference.enableLobby();
+          _conference.joinLobby(_conference.getUserName(), "random_email");
+        });
+
+        _conference.addEventListener("USER_ROLE_CHANGED", (id, newRole) {
+          String role = newRole.toString().toLowerCase();
+          if (role == "moderator") {
+            _conference.enableLobby();
+          }
+        });
+
+        _conference.addEventListener("LOBBY_USER_JOINED",
+            (userDisplayName, userEmail) {
+          String displayName = userDisplayName.toString().toLowerCase();
+          String email = userEmail.toString().toLowerCase();
+          _conference.joinLobby(displayName, email);
+        });
+
+        _conference.addEventListener("CONFERENCE_FAILED", () {
+          _conference.joinLobby(_conference.getUserName(), "random_email");
         });
 
         _conference.addEventListener("TRACK_ADDED", (track) {

@@ -33,12 +33,13 @@ public class ConferenceManager extends Conference {
     }
 
     public void joinLobby(Map<String, ?> params) {
-        String displayName = params.get("displayName");
-        String email = params.get("email");
-        conference.joinLobby(displayName, email);
+        String displayName = (String) params.get("displayName");
+        String email = (String) params.get("email");
+        conference.joinLobby(displayName,email);
     }
 
     public void enableLobby() {
+        System.out.println("Inside Enable Lobby");
         conference.enableLobby();
     }
 
@@ -47,14 +48,13 @@ public class ConferenceManager extends Conference {
     }
 
     public void lobbyDenyAccess(Map<String, ?> params){
-        conference.lobbyDenyAccess(params.get("participantId"));
+        conference.lobbyDenyAccess((String) params.get("participantId"));
     }
 
     public void lobbyApproveAccess(Map<String, ?> params){
-        conference.lobbyApproveAccess(params.get("participantId"));
+        conference.lobbyApproveAccess((String) params.get("participantId"));
     }
     
-
     public void grantOwner(Map<String, ?> params) {
         conference.grantOwner((String) params.get("id"));
     }
@@ -444,7 +444,7 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "ENDPOINT_MESSAGE_RECEIVED":
-                // Handle endpoint message received case
+                
                 break;
 
             case "REMOTE_STATS_UPDATED":
