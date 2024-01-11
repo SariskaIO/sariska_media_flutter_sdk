@@ -277,7 +277,6 @@ public class ConferenceManager extends Conference {
         String eventString = (String) event.get("event");
         switch (eventString) {
             case "CONFERENCE_JOINED":
-                // Handle conference joined event
                 Map<String, Object> map = new HashMap<>();
                 System.out.println("USer ID: " + conference.getUserId());
                 map.put("userId", conference.getUserId());
@@ -297,7 +296,6 @@ public class ConferenceManager extends Conference {
             case "TRACK_ADDED":
                 // Handle track added event
                 conference.addEventListener(eventString, (p) -> {
-                    System.out.println("Inside ");
                     JitsiRemoteTrack track = (JitsiRemoteTrack) p;
                     Map<String, Object> trackMap = new HashMap<>();
                     trackMap.put("type", ((JitsiRemoteTrack) p).getType());
@@ -396,7 +394,11 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "LOBBY_USER_LEFT":
-                // Handle lobby user left case
+            conference.addEventListener(eventString, (id) -> {
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("id", id);
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
 
             case "MEMBERS_ONLY_CHANGED":
@@ -424,9 +426,13 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "USER_ROLE_CHANGED":
-                // Handle user role changed case
+                conference.addEventListener(eventString, (id, role) -> {
+                    Map<String, Object> participantMap = new HashMap<>();
+                    participantMap.put("id", id);
+                    participantMap.put("role", role);
+                    emit.emit((String) event.get("event"), participantMap);
+                });   
                 break;
-
             case "USER_STATUS_CHANGED":
                 // Handle user status changed case
                 break;
@@ -456,21 +462,19 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "LOBBY_USER_JOINED":
-            conference.addEventListener(eventString, (id, participant) -> {
-                Participant participant1 = (Participant) participant;
+            conference.addEventListener(eventString, (id, name) -> {
                 Map<String, Object> participantMap = new HashMap<>();
-                participantMap.put("displayName", participant1.getDisplayName());
-                participantMap.put("email", participant1.getEmail());
+                participantMap.put("id", id);
+                participantMap.put("displayName", name);
                 emit.emit((String) event.get("event"), participantMap);
             });
                 break;
-
             case "LOBBY_USER_UPDATED":
             conference.addEventListener(eventString, (id, participant) -> {
                 Participant participant1 = (Participant) participant;
                 Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("id", participant1.getId());
                 participantMap.put("displayName", participant1.getDisplayName());
-                participantMap.put("email", participant1.getEmail());
                 emit.emit((String) event.get("event"), participantMap);
             });
                 break;

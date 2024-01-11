@@ -77,6 +77,14 @@ class Conference {
             case "TALK_WHILE_MUTED":
             case "NO_AUDIO_INPUT":
             case "AUDIO_INPUT_STATE_CHANGE":
+            case "LOBBY_USER_JOINED":
+              (_bindings[i].getCallback() as ConferenceCallbackParam2)(
+                  m["id"], m["participant"]);
+              break;
+            case "LOBBY_USER_UPDATED":
+              (_bindings[i].getCallback() as ConferenceCallbackParam2)(
+                  m["id"], m["participant"]);
+              break;
             case "NOISY_MIC":
               (_bindings[i].getCallback() as ConferenceCallbackParam0)();
               break;
@@ -128,6 +136,9 @@ class Conference {
               participants.add(participant);
               (_bindings[i].getCallback() as ConferenceCallbackParam2)(
                   m["id"], participant);
+              break;
+            case 'LOBBY_USER_LEFT':
+              (_bindings[i].getCallback() as ConferenceCallbackParam1)(m["id"]);
               break;
             case 'USER_LEFT':
               Participant participant =
