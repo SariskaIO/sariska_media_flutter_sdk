@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_audio_output/flutter_audio_output.dart';
@@ -74,8 +73,11 @@ class _MyAppState extends State<MyApp> {
     _currentInput = await FlutterAudioOutput.getCurrentOutput();
   }
 
+  late BuildContext currentContext;
+
   @override
   Widget build(BuildContext context) {
+    currentContext = context;
     return MaterialApp(
       home: Scaffold(
         body: Stack(
@@ -268,6 +270,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initPlatformState() async {
     try {
+      debugPrint("Initializing platform state");
       token = await generateToken();
       _sariskaMediaTransport.initializeSdk();
       setupLocalStream();
@@ -276,34 +279,80 @@ class _MyAppState extends State<MyApp> {
 
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();
-
         _conference.addEventListener("CONFERENCE_JOINED", () {
           for (JitsiLocalTrack track in localtracks) {
+            debugPrint("Local Track Added");
             _conference.addTrack(track);
           }
-          _conference.enableLobby();
-          _conference.joinLobby(_conference.getUserName(), "random_email");
         });
 
         _conference.addEventListener("USER_ROLE_CHANGED", (id, newRole) {
+          debugPrint("User Role changed");
           String role = newRole.toString().toLowerCase();
           if (role == "moderator") {
+            debugPrint("Enable Lobby Called");
             _conference.enableLobby();
           }
         });
 
-        _conference.addEventListener("LOBBY_USER_JOINED",
-            (userDisplayName, userEmail) {
-          String displayName = userDisplayName.toString().toLowerCase();
-          String email = userEmail.toString().toLowerCase();
-          _conference.joinLobby(displayName, email);
+        _conference.addEventListener("LOBBY_USER_JOINED", (id, name) {
+          debugPrint("New User in Lobby");
+          debugPrint(id);
+          debugPrint(name);
+          setState(() {
+            showDialog(
+              context: currentContext,
+              builder: (BuildContext currentContext) {
+                return AlertDialog(
+                  title: const Text('A New User want to join lobby ?'),
+                  content: const Text(
+                    '',
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        textStyle:
+                            Theme.of(currentContext).textTheme.labelLarge,
+                      ),
+                      child: const Text('Deny user'),
+                      onPressed: () {
+                        _conference.lobbyDenyAccess(id.toString());
+                        Navigator.of(currentContext).pop();
+                      },
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        textStyle:
+                            Theme.of(currentContext).textTheme.labelLarge,
+                      ),
+                      child: const Text('Allow user'),
+                      onPressed: () {
+                        _conference.lobbyApproveAccess(id.toString());
+                        Navigator.of(currentContext).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          });
+        });
+
+        _conference.addEventListener(
+            "LOBBY_USER_UPDATED", (id, participant) {});
+
+        _conference.addEventListener("LOBBY_USER_LEFT", (id) {
+          debugPrint("Left User from Lobby");
+          debugPrint(id);
         });
 
         _conference.addEventListener("CONFERENCE_FAILED", () {
+          debugPrint("Conference Failed");
           _conference.joinLobby(_conference.getUserName(), "random_email");
         });
 
         _conference.addEventListener("TRACK_ADDED", (track) {
+          debugPrint("A Track Added");
           JitsiRemoteTrack remoteTrack = track;
           for (JitsiLocalTrack track in localtracks) {
             if (track.getStreamURL() == remoteTrack.getStreamURL()) {
@@ -316,7 +365,6 @@ class _MyAppState extends State<MyApp> {
           streamURL = remoteTrack.getStreamURL();
           replaceChild(remoteTrack);
         });
-
         _conference.join();
       });
 
@@ -493,6 +541,7 @@ class _RoomNamePageState extends State<RoomNamePage> {
                   textStyle: const TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
+                  debugPrint("Meeting create button pressed");
                   final roomName = _roomNameController.text.trim();
                   if (roomName.isNotEmpty) {
                     Navigator.pushReplacement(
