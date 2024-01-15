@@ -27,10 +27,6 @@ For detailed documentation on how to integrate the SDK for your live video appli
    'apiKey': "{Your-api-key}",
    ```
 3. Go to example/lib/main.dart
-4. Change the room name in place of the placeholder
-    ```
-   _connection = Connection(token, "{your-room-name}", false);           
-   ```
 5. Flutter pub get
 6. Run the application
 

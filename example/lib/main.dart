@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_audio_output/flutter_audio_output.dart';
+import 'package:get/get.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,7 +20,7 @@ typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
 const Color themeColor = Color(0xff4050B5);
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(const GetMaterialApp(
     home: RoomNamePage(),
     debugShowCheckedModeBanner: true,
   ));
@@ -42,6 +43,7 @@ class _MyAppState extends State<MyApp> {
   List<JitsiRemoteTrack> remoteTracks = [];
   List<JitsiLocalTrack> localtracks = [];
   JitsiLocalTrack? localTrack;
+  JitsiRemoteTrack? remoteTrack;
   bool isAudioOn = true;
   bool isVideoOn = true;
 
@@ -106,35 +108,36 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
               ),
-            Positioned(
-              bottom: 140,
-              left: 0,
-              right: 0,
-              child: SizedBox(
-                height: 100,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: remoteTracks.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 2.0, right: 2.0),
-                      child: Container(
-                        width: 120,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
+            if(remoteTrack != null)
+              Positioned(
+                bottom: 140,
+                left: 0,
+                right: 0,
+                child: SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 2.0, right: 2.0),
+                        child: Container(
+                          width: 120,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: WebRTCView(
+                            localTrack: remoteTrack!,
+                            mirror: true,
+                            objectFit: 'cover',
+                          ),
                         ),
-                        child: WebRTCView(
-                          localTrack: remoteTracks[index],
-                          mirror: true,
-                          objectFit: 'cover',
-                        ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
             Positioned(
               bottom: 0,
               left: 0,
@@ -210,9 +213,13 @@ class _MyAppState extends State<MyApp> {
                               buildEndCallButton(
                                 onPressed: () {
                                   print("Ending call");
+                                  localTrack?.dispose();
+                                  localtracks.clear();
+                                  remoteTrack = null;
+                                  remoteTracks.clear();
                                   _conference.leave();
                                   _connection.disconnect();
-                                  exit(0);
+                                  Get.off(() => RoomNamePage());
                                 },
                               ),
                               buildCustomButton(
@@ -266,26 +273,31 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> initPlatformState() async {
     try {
       token = await generateToken();
 
       _sariskaMediaTransport.initializeSdk();
-
+      
       setupLocalStream();
 
       _connection = Connection(token, widget.roomName, false);
-
+      
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();
-
+      
         _conference.addEventListener("CONFERENCE_JOINED", () {
           print("Conference joined from Swift and Android");
           for (JitsiLocalTrack track in localtracks) {
             _conference.addTrack(track);
           }
         });
-
+      
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
           for (JitsiLocalTrack track in localtracks) {
@@ -300,17 +312,23 @@ class _MyAppState extends State<MyApp> {
           replaceChild(remoteTrack);
         });
 
+        _conference.addEventListener("TRACK_REMOVED", (track) {
+          setState(() {
+            remoteTrack = null;
+          });
+        });
+      
         _conference.join();
       });
-
+      
       _connection.addEventListener("CONNECTION_FAILED", () {
         print("Connection Failed");
       });
-
+      
       _connection.addEventListener("CONNECTION_DISCONNECTED", () {
         print("Connection Disconnected");
       });
-
+      
       _connection.connect();
 
       setState(() {});
@@ -337,9 +355,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void replaceChild(JitsiRemoteTrack remoteTrack) {
-    setState(() {
-      remoteTracks.add(remoteTrack);
-    });
+    if (mounted) {
+      setState(() {
+        this.remoteTrack = remoteTrack;
+      });
+    }
   }
 
   void toggleSpeaker(bool isSpeaker) async {

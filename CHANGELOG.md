@@ -1,3 +1,7 @@
+## 0.1.0
+* Fix: Rejoining error
+* Feature: track.switchCamera() added for local track
+
 ## 0.0.9
 * Feature: React Native In call manager added to the sdk
 * Feature: track.toggleSpeaker(Bool) added for speaker options

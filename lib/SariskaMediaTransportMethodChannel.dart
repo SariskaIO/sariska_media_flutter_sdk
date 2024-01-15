@@ -16,6 +16,7 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
   @visibleForTesting
   static const methodChannel = const MethodChannel('sariska_media_transport_flutter');
   static const eventChannel = const EventChannel('sariskaMediaTransportEvent');
+  static var initialized = false;
 
   @override
   Future<String?> getPlatformVersion() async {
@@ -26,7 +27,10 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
   /// Initializes the Sariska Media Transport SDK.
   @override
   void initializeSdk() {
-    _invokeMethod('initializeSdk');
+    if(initialized == false){
+      _invokeMethod('initializeSdk');
+      initialized = true;
+    }
     eventChannel.receiveBroadcastStream().listen((event) {
       print('Inside SMT receive broadcast stream');
       final action = event['action'] as String;
