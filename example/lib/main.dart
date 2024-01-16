@@ -211,10 +211,11 @@ class _MyAppState extends State<MyApp> {
                               ),
                               buildEndCallButton(
                                 onPressed: () {
-                                  print("Ending call");
+                                  localTrack?.dispose();
+                                  localtracks.clear();
                                   _conference.leave();
                                   _connection.disconnect();
-                                  exit(0);
+                                  Navigator.pop(context);
                                 },
                               ),
                               buildCustomButton(
@@ -343,16 +344,13 @@ class _MyAppState extends State<MyApp> {
 
         _conference.addEventListener("LOBBY_USER_LEFT", (id) {
           debugPrint("Left User from Lobby");
-          debugPrint(id);
         });
 
         _conference.addEventListener("CONFERENCE_FAILED", () {
-          debugPrint("Conference Failed");
           _conference.joinLobby(_conference.getUserName(), "random_email");
         });
 
         _conference.addEventListener("TRACK_ADDED", (track) {
-          debugPrint("A Track Added");
           JitsiRemoteTrack remoteTrack = track;
           for (JitsiLocalTrack track in localtracks) {
             if (track.getStreamURL() == remoteTrack.getStreamURL()) {
@@ -544,7 +542,7 @@ class _RoomNamePageState extends State<RoomNamePage> {
                   debugPrint("Meeting create button pressed");
                   final roomName = _roomNameController.text.trim();
                   if (roomName.isNotEmpty) {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => MyApp(roomName: roomName),
