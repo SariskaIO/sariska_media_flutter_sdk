@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.oney.WebRTCModule.WebRTCView;
@@ -31,18 +32,18 @@ public class SariskaSurfaceViewFactory extends PlatformViewFactory {
 
     @Override
     public PlatformView create(Context context, int viewId, Object args) {
-        return new SariskaSurfaceView(context.getApplicationContext(), messenger, viewId, (Map<?, ?>) args);
+        return new SariskaSurfaceView(SariskaMediaTransport.getReactContext(), messenger, viewId, (Map<?, ?>) args);
     }
 }
 
 class SariskaSurfaceView implements PlatformView, MethodChannel.MethodCallHandler {
+    @NonNull
     private final WebRTCView view;
     private final MethodChannel channel;
 
     SariskaSurfaceView(Context context, BinaryMessenger messenger, int viewId, Map<?, ?> args) {
-        view = new WebRTCView(SariskaMediaTransport.getReactContext());
         channel = new MethodChannel(messenger, "sariska_media_transport_surface_view_" + viewId);
-
+        view = new WebRTCView(context);
         if (args != null) {
             String streamURL = (String) args.get("streamURL");
             if (streamURL != null) {
@@ -75,6 +76,8 @@ class SariskaSurfaceView implements PlatformView, MethodChannel.MethodCallHandle
 
     @Override
     public void dispose() {
+        System.out.println("Disposing");
+        view.invalidate();
         channel.setMethodCallHandler(null);
     }
 
@@ -105,7 +108,6 @@ class SariskaSurfaceView implements PlatformView, MethodChannel.MethodCallHandle
     }
 
     private void setStreamURL(String streamURL) {
-        System.out.println("Inside setStreamURL");
         view.setStreamURL(streamURL);
     }
 

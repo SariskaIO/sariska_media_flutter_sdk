@@ -49,29 +49,24 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        child: AndroidView(
-          viewType: 'SariskaSurfaceView',
-          onPlatformViewCreated: onPlatformViewCreated,
+
+    const String viewType = 'SariskaSurfaceView';
+
+    return PlatformViewLink(
+      viewType: viewType,
+      surfaceFactory:
+          (context, controller) {
+        return AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
           hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-          creationParams: {
-            'streamURL': track?.getStreamURL(),
-            'mirror': _mirror,
-            'objectFit': _objectFit,
-            'zOrder': _zOrder
-          },
-          creationParamsCodec: const StandardMessageCodec(),
-          gestureRecognizers: widget.gestureRecognizers,
-        ),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        child: UiKitView(
-          viewType: 'SariskaSurfaceView',
-          onPlatformViewCreated: onPlatformViewCreated,
+        );
+      },
+      onCreatePlatformView: (params) {
+        return PlatformViewsService.initSurfaceAndroidView(
+          id: params.id,
+          viewType: viewType,
+          layoutDirection: TextDirection.ltr,
           creationParams: {
             'streamURL': track?.getStreamURL(),
             'mirror': _mirror,
@@ -79,15 +74,19 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
             'trackId': track?.getId(),
             'muted': track?.isMuted(),
             'type': track?.getType(),
+            '_zOrder': _zOrder
 //            'deviceId': track?.getDeviceId(),
 //            'participantId': track?.getParticipantId()
           },
           creationParamsCodec: const StandardMessageCodec(),
-          gestureRecognizers: widget.gestureRecognizers,
-        ),
-      );
-    }
-    return Text('$defaultTargetPlatform is not yet supported by the plugin');
+          onFocus: () {
+            params.onFocusChanged(true);
+          },
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..create();
+      },
+    );
   }
 
   @override
@@ -120,8 +119,8 @@ class _RtcSurfaceViewState extends State<WebRTCView> {
 
   @override
   void dispose() {
-    super.dispose();
     _channels.remove(_id);
+    super.dispose();
   }
 
   void setObjectFit() {
