@@ -480,7 +480,12 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "MESSAGE_RECEIVED":
-                // Handle message received case
+            conference.addEventListener(eventString, (senderId, message) -> {
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("message", message);
+                participantMap.put("senderId", senderId);
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
 
             case "RECORDER_STATE_CHANGED":

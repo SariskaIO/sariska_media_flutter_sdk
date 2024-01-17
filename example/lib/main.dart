@@ -296,6 +296,10 @@ class _MyAppState extends State<MyApp> {
           }
         });
 
+        _conference.addEventListener("MESSAGE_RECEIVED", (senderId, message) {
+          debugPrint("Received Message $message");
+        });
+
         _conference.addEventListener("LOBBY_USER_JOINED", (id, name) {
           debugPrint("New User in Lobby");
           debugPrint(id);

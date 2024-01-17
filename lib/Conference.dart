@@ -192,8 +192,8 @@ class Conference {
                   m["isAuthEnabled"], m["authIdentity"]);
               break;
             case "MESSAGE_RECEIVED":
-              (_bindings[i].getCallback() as ConferenceCallbackParam3)(
-                  m["id"], m["text"], m["ts"]);
+              (_bindings[i].getCallback() as ConferenceCallbackParam2)(
+                  m["senderId"], m["message"]);
               break;
             case "PARTICIPANT_KICKED":
               Participant kicked = participants
