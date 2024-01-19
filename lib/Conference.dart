@@ -5,19 +5,20 @@ import 'JitsiRemoteTrack.dart';
 import 'Participant.dart';
 
 /// Signature for a conference callback without parameters.
-typedef void ConferenceCallbackParam0();
+typedef ConferenceCallbackParam0 = void Function();
 
 /// Signature for a conference callback with one parameter.
-typedef void ConferenceCallbackParam1<W>(W w);
+typedef ConferenceCallbackParam1<W> = void Function(W w);
 
 /// Signature for a conference callback with two parameters.
-typedef void ConferenceCallbackParam2<W, X>(W w, X x);
+typedef ConferenceCallbackParam2<W, X> = void Function(W w, X x);
 
 /// Signature for a conference callback with three parameters.
-typedef void ConferenceCallbackParam3<W, X, Y>(W w, X x, Y y);
+typedef ConferenceCallbackParam3<W, X, Y> = void Function(W w, X x, Y y);
 
 /// Signature for a conference callback with four parameters.
-typedef void ConferenceCallbackParam4<W, X, Y, Z>(W w, X x, Y y, Z z);
+typedef ConferenceCallbackParam4<W, X, Y, Z> = void Function(
+    W w, X x, Y y, Z z);
 
 /// A binding of a conference event and its corresponding callback.
 class ConferenceBinding<T> {

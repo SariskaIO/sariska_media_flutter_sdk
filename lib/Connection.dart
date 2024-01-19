@@ -48,11 +48,8 @@ class Connection {
   /// The [roomName] parameter is the name of the conference room.
   /// The [isNightly] parameter indicates whether the connection is for a nightly build.
   Connection(String token, String roomName, bool isNightly) {
-    _invokeMethod('createConnection', {
-      'token': token,
-      'roomName': roomName,
-      'isNightly': isNightly
-    });
+    _invokeMethod('createConnection',
+        {'token': token, 'roomName': roomName, 'isNightly': isNightly});
 
     _eventChannel.receiveBroadcastStream().listen((event) {
       print('Received Broadcast Stream');
@@ -80,7 +77,7 @@ class Connection {
   ///
   /// Returns a new instance of [Conference].
   Conference initJitsiConference() {
-    return new Conference();
+    return Conference();
   }
 
   /// Connects to the conference.
@@ -108,7 +105,7 @@ class Connection {
   /// The [event] parameter is the name of the event to listen for.
   /// The [callback] parameter is the callback function to be executed when the event occurs.
   void addEventListener(String event, ConnectionCallback callback) {
-    _bindings.add(new ConnectionBinding(event, callback));
+    _bindings.add(ConnectionBinding(event, callback));
     Map<String, dynamic> arguments = {
       'event': event,
     };
@@ -119,8 +116,7 @@ class Connection {
   ///
   /// The [event] parameter is the name of the event to remove.
   void removeEventListener(String event) {
-    _bindings =
-        _bindings.where((binding) => binding.event != event).toList();
+    _bindings = _bindings.where((binding) => binding.event != event).toList();
     _invokeMethod('removeConnectionListeners');
   }
 
