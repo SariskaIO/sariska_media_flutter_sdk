@@ -1,3 +1,8 @@
+## 0.2.0
+* Feature: Enable Lobby for users
+* Feature: Ability to send and receive messages betweek users
+* Minor bug fixes
+
 ## 0.1.0
 * Fix: Rejoining error
 * Feature: track.switchCamera() added for local track
