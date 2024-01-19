@@ -70,52 +70,60 @@ class Conference {
       for (var i = 0; i < _bindings.length; i++) {
         if (_bindings[i].getEvent() == action) {
           switch (action) {
-          case "CONFERENCE_LEFT":
-          case "CONFERENCE_FAILED":
-          case "CONFERENCE_ERROR":
-          case "BEFORE_STATISTICS_DISPOSED":
-          case "TALK_WHILE_MUTED":
-          case "NO_AUDIO_INPUT":
-          case "AUDIO_INPUT_STATE_CHANGE":
-          case "NOISY_MIC":
-          (_bindings[i].getCallback() as ConferenceCallbackParam0)();
-          break;
-          case "CONFERENCE_JOINED":
-          (_bindings[i].getCallback() as ConferenceCallbackParam0)();
-          break;
-          case "LOCAL_STATS_UPDATED":
-          (_bindings[i].getCallback()
-          as ConferenceCallbackParam1)(m["statsObject"]);
-          break;
-          case 'DOMINANT_SPEAKER_CHANGED':
-          (_bindings[i].getCallback() as ConferenceCallbackParam1)(m["id"]);
-          break;
-          case 'SUBJECT_CHANGED':
-          (_bindings[i].getCallback()
-          as ConferenceCallbackParam1)(m["subject"]);
-          break;
-          case 'CONFERENCE_UNIQUE_ID_SET':
+            case "CONFERENCE_LEFT":
+            case "CONFERENCE_FAILED":
+            case "CONFERENCE_ERROR":
+            case "BEFORE_STATISTICS_DISPOSED":
+            case "TALK_WHILE_MUTED":
+            case "NO_AUDIO_INPUT":
+            case "AUDIO_INPUT_STATE_CHANGE":
+            case "LOBBY_USER_JOINED":
+              (_bindings[i].getCallback() as ConferenceCallbackParam2)(
+                  m["id"], m["participant"]);
+              break;
+            case "LOBBY_USER_UPDATED":
+              (_bindings[i].getCallback() as ConferenceCallbackParam2)(
+                  m["id"], m["participant"]);
+              break;
+            case "NOISY_MIC":
+              (_bindings[i].getCallback() as ConferenceCallbackParam0)();
+              break;
+            case "CONFERENCE_JOINED":
+              (_bindings[i].getCallback() as ConferenceCallbackParam0)();
+              break;
+            case "LOCAL_STATS_UPDATED":
               (_bindings[i].getCallback()
-              as ConferenceCallbackParam1)(m["meetingId"]);
+                  as ConferenceCallbackParam1)(m["statsObject"]);
+              break;
+            case 'DOMINANT_SPEAKER_CHANGED':
+              (_bindings[i].getCallback() as ConferenceCallbackParam1)(m["id"]);
+              break;
+            case 'SUBJECT_CHANGED':
+              (_bindings[i].getCallback()
+                  as ConferenceCallbackParam1)(m["subject"]);
+              break;
+            case 'CONFERENCE_UNIQUE_ID_SET':
+              (_bindings[i].getCallback()
+                  as ConferenceCallbackParam1)(m["meetingId"]);
               break;
             case 'DTMF_SUPPORT_CHANGED':
               dtmf = m["support"];
               (_bindings[i].getCallback()
-              as ConferenceCallbackParam1)(m["support"]);
+                  as ConferenceCallbackParam1)(m["support"]);
               break;
             case 'TRACK_ADDED':
-              JitsiRemoteTrack track = new JitsiRemoteTrack(m);
+              JitsiRemoteTrack track = JitsiRemoteTrack(m);
               remoteTracks.add(track);
               (_bindings[i].getCallback() as ConferenceCallbackParam1)(track);
               break;
             case 'TRACK_REMOVED':
               JitsiRemoteTrack track =
-              remoteTracks.firstWhere((t) => t.id == m["id"]);
+                  remoteTracks.firstWhere((t) => t.id == m["id"]);
               (_bindings[i].getCallback() as ConferenceCallbackParam1)(track);
               break;
             case 'TRACK_MUTE_CHANGED':
               JitsiRemoteTrack track =
-              remoteTracks.firstWhere((t) => t.id == m["id"]);
+                  remoteTracks.firstWhere((t) => t.id == m["id"]);
               track.setMuted(m["muted"]);
               (_bindings[i].getCallback() as ConferenceCallbackParam1)(track);
               break;
@@ -124,14 +132,17 @@ class Conference {
                   m["id"], m["audioLevel"]);
               break;
             case 'USER_JOINED':
-              Participant participant = new Participant(m);
+              Participant participant = Participant(m);
               participants.add(participant);
               (_bindings[i].getCallback() as ConferenceCallbackParam2)(
                   m["id"], participant);
               break;
+            case 'LOBBY_USER_LEFT':
+              (_bindings[i].getCallback() as ConferenceCallbackParam1)(m["id"]);
+              break;
             case 'USER_LEFT':
               Participant participant =
-              participants.firstWhere((p) => p.id == m["id"]);
+                  participants.firstWhere((p) => p.id == m["id"]);
               (_bindings[i].getCallback() as ConferenceCallbackParam2)(
                   m["id"], participant);
               break;
@@ -181,8 +192,8 @@ class Conference {
                   m["isAuthEnabled"], m["authIdentity"]);
               break;
             case "MESSAGE_RECEIVED":
-              (_bindings[i].getCallback() as ConferenceCallbackParam3)(
-                  m["id"], m["text"], m["ts"]);
+              (_bindings[i].getCallback() as ConferenceCallbackParam2)(
+                  m["senderId"], m["message"]);
               break;
             case "PARTICIPANT_KICKED":
               Participant kicked = participants
@@ -246,6 +257,28 @@ class Conference {
 
   void setStartMutedPolicy(Map<String, bool> policy) {
     _invokeMethod('setStartMutedPolicy', {'policy': policy});
+  }
+
+  void joinLobby(String displayName, String email) {
+    _invokeMethod(
+      'joinLobby',
+      {'displayName': displayName, 'email': email},
+    );
+  }
+
+  void enableLobby() {
+    print("Inside enable Lobby Lobby");
+    _invokeMethod('enableLobby');
+  }
+
+  void lobbyDenyAccess(String participantId) {
+    print("Inside Lobby Deny Access");
+    _invokeMethod('lobbyDenyAccess', {'participantId': participantId});
+  }
+
+  void lobbyApproveAccess(String participantId) {
+    print("Inside lobby Approve Access");
+    _invokeMethod('lobbyApproveAccess', {'participantId': participantId});
   }
 
   void setReceiverVideoConstraint(int resolution) {
@@ -396,7 +429,7 @@ class Conference {
   }
 
   void addEventListener(String event, dynamic callback) {
-    _bindings.add(new ConferenceBinding(event, callback));
+    _bindings.add(ConferenceBinding(event, callback));
     Map<String, dynamic> arguments = {
       'event': event,
     };

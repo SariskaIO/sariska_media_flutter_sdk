@@ -21,6 +21,7 @@ public class ConferenceManager extends Conference {
         System.out.println("Inside create conference");
         conference = new Conference();
     }
+    
     @Override
     public void join() {
         System.out.println("inside conference join");
@@ -31,6 +32,29 @@ public class ConferenceManager extends Conference {
         conference.join((String) params.get("password"));
     }
 
+    public void joinLobby(Map<String, ?> params) {
+        String displayName = (String) params.get("displayName");
+        String email = (String) params.get("email");
+        conference.joinLobby(displayName,email);
+    }
+
+    public void enableLobby() {
+        System.out.println("Inside Enable Lobby");
+        conference.enableLobby();
+    }
+
+    public void disableLobby() {
+        conference.disableLobby();
+    }
+
+    public void lobbyDenyAccess(Map<String, ?> params){
+        conference.lobbyDenyAccess((String) params.get("participantId"));
+    }
+
+    public void lobbyApproveAccess(Map<String, ?> params){
+        conference.lobbyApproveAccess((String) params.get("participantId"));
+    }
+    
     public void grantOwner(Map<String, ?> params) {
         conference.grantOwner((String) params.get("id"));
     }
@@ -253,7 +277,6 @@ public class ConferenceManager extends Conference {
         String eventString = (String) event.get("event");
         switch (eventString) {
             case "CONFERENCE_JOINED":
-                // Handle conference joined event
                 Map<String, Object> map = new HashMap<>();
                 System.out.println("USer ID: " + conference.getUserId());
                 map.put("userId", conference.getUserId());
@@ -273,7 +296,6 @@ public class ConferenceManager extends Conference {
             case "TRACK_ADDED":
                 // Handle track added event
                 conference.addEventListener(eventString, (p) -> {
-                    System.out.println("Inside ");
                     JitsiRemoteTrack track = (JitsiRemoteTrack) p;
                     Map<String, Object> trackMap = new HashMap<>();
                     trackMap.put("type", ((JitsiRemoteTrack) p).getType());
@@ -372,7 +394,11 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "LOBBY_USER_LEFT":
-                // Handle lobby user left case
+            conference.addEventListener(eventString, (id) -> {
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("id", id);
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
 
             case "MEMBERS_ONLY_CHANGED":
@@ -400,9 +426,13 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "USER_ROLE_CHANGED":
-                // Handle user role changed case
+                conference.addEventListener(eventString, (id, role) -> {
+                    Map<String, Object> participantMap = new HashMap<>();
+                    participantMap.put("id", id);
+                    participantMap.put("role", role);
+                    emit.emit((String) event.get("event"), participantMap);
+                });   
                 break;
-
             case "USER_STATUS_CHANGED":
                 // Handle user status changed case
                 break;
@@ -420,7 +450,7 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "ENDPOINT_MESSAGE_RECEIVED":
-                // Handle endpoint message received case
+                
                 break;
 
             case "REMOTE_STATS_UPDATED":
@@ -432,15 +462,30 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "LOBBY_USER_JOINED":
-                // Handle lobby user joined case
+            conference.addEventListener(eventString, (id, name) -> {
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("id", id);
+                participantMap.put("displayName", name);
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
-
             case "LOBBY_USER_UPDATED":
-                // Handle lobby user updated case
+            conference.addEventListener(eventString, (id, participant) -> {
+                Participant participant1 = (Participant) participant;
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("id", participant1.getId());
+                participantMap.put("displayName", participant1.getDisplayName());
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
 
             case "MESSAGE_RECEIVED":
-                // Handle message received case
+            conference.addEventListener(eventString, (senderId, message) -> {
+                Map<String, Object> participantMap = new HashMap<>();
+                participantMap.put("message", message);
+                participantMap.put("senderId", senderId);
+                emit.emit((String) event.get("event"), participantMap);
+            });
                 break;
 
             case "RECORDER_STATE_CHANGED":
