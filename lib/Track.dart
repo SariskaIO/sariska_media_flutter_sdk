@@ -9,26 +9,26 @@ class Track {
   String streamURL = '';
 
   Track(Map<dynamic, dynamic> map) {
-    this.type = map["type"];
-    this.id = map["id"];
-    this.muted = map["muted"];
-    this.streamURL = map["streamURL"];
+    type = map["type"];
+    id = map["id"];
+    muted = map["muted"];
+    streamURL = map["streamURL"];
   }
 
   String getType() {
-    return this.type;
+    return type;
   }
 
   String getStreamURL() {
-    return this.streamURL;
+    return streamURL;
   }
 
   String getId() {
-    return this.id;
+    return id;
   }
 
   bool isMuted() {
-    return this.muted;
+    return muted;
   }
 
   bool isLocal() {
@@ -36,6 +36,6 @@ class Track {
   }
 
   void setMuted(bool mute) {
-    this.muted = mute;
+    muted = mute;
   }
 }

@@ -3,7 +3,7 @@ import 'package:sariska_media_flutter_sdk/Connection.dart';
 
 import 'JitsiLocalTrack.dart';
 import 'SariskaMediaTransportInterface.dart';
-typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
+typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
 
 class SariskaMediaTransport {
 

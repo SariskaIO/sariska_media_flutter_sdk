@@ -11,14 +11,15 @@ class JitsiLocalTrack extends Track{
   static const MethodChannel _methodChannel = MethodChannel('track');
 
   JitsiLocalTrack(Map<String, dynamic> map) : super(map) {
-    this.participantId = map['participantId'];
-    this.deviceId = map['deviceId'];
+    participantId = map['participantId'];
+    deviceId = map['deviceId'];
   }
 
   static Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
     return _methodChannel.invokeMethod(method, arguments);
   }
 
+  @override
   bool isLocal() {
     return true;
   }
@@ -32,21 +33,21 @@ class JitsiLocalTrack extends Track{
   }
 
   void switchCamera() {
-    if (this.type == "video") {
-      _invokeMethod("switchCamera", {'trackId': this.getId()});
+    if (type == "video") {
+      _invokeMethod("switchCamera", {'trackId': getId()});
     }
   }
 
   void mute() {
-    _invokeMethod("mute", {'trackId': this.getId()});
+    _invokeMethod("mute", {'trackId': getId()});
   }
 
   void unmute() {
-    _invokeMethod("unmute", {'trackId': this.getId()});
+    _invokeMethod("unmute", {'trackId': getId()});
   }
 
   void dispose() {
-    _invokeMethod("dispose", {'trackId': this.getId()});
+    _invokeMethod("dispose", {'trackId': getId()});
   }
 
   void toggleSpeaker(bool onSpeaker){

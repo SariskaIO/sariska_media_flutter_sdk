@@ -24,15 +24,20 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.sariska.sdk.JitsiLocalTrack;
 import io.sariska.sdk.SariskaMediaTransport;
 import io.flutter.plugin.platform.PlatformViewRegistry;
+import io.flutter.embedding.engine.FlutterJNI;
+
 /** SariskaMediaTransportPlugin */
-public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHandler , EventChannel.StreamHandler{
-  /// The MethodChannel that will the communication between Flutter and native Android
+public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
+  /// The MethodChannel that will the communication between Flutter and native
+  /// Android
   ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
+  /// This local reference serves to register the plugin with the Flutter Engine
+  /// and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private MethodChannel methodChannel;
-  private EventChannel eventChannel;
+  private MethodChannel methodChannel = null;
+  private EventChannel eventChannel = null;
   private EventChannel.EventSink eventSink;
+  private FlutterJNI flutterJNI = new FlutterJNI();
 
   public static List<JitsiLocalTrack> localTracks = new ArrayList<JitsiLocalTrack>();
   private Context applicationContext;
@@ -46,8 +51,15 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     methodChannel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "sariska_media_transport_flutter");
     eventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), "sariskaMediaTransportEvent");
-    eventChannel.setStreamHandler(this);
-    methodChannel.setMethodCallHandler(this);
+    if (methodChannel != null) {
+      methodChannel.setMethodCallHandler(this);
+    }
+    if (eventChannel != null) {
+      eventChannel.setStreamHandler(this);
+    }
+
+    flutterJNI.attachToNative();
+
     applicationContext = flutterPluginBinding.getApplicationContext();
     connectionPlugin = new ConnectionPlugin(flutterPluginBinding.getBinaryMessenger());
     conferencePlugin = new ConferencePlugin(flutterPluginBinding.getBinaryMessenger());
@@ -56,18 +68,16 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     FlutterEngine flutterEngine = flutterPluginBinding.getFlutterEngine();
     PlatformViewRegistry registry = flutterEngine.getPlatformViewsController().getRegistry();
     registry.registerViewFactory(
-            "SariskaSurfaceView",
-            new SariskaSurfaceViewFactory(flutterPluginBinding.getBinaryMessenger())
-    );
+        "SariskaSurfaceView",
+        new SariskaSurfaceViewFactory(flutterPluginBinding.getBinaryMessenger()));
   }
-
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if(call.method.equals("initializeSdk")){
+    if (call.method.equals("initializeSdk")) {
       initializeSariskaMediaTransport();
     }
-    if(call.method.equals("createLocalTracks")){
+    if (call.method.equals("createLocalTracks")) {
       Map<String, Object> arguments = call.arguments();
       createLocalTracks(arguments);
     }
@@ -80,23 +90,32 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    methodChannel.setMethodCallHandler(null);
+    if (methodChannel != null) {
+      methodChannel.setMethodCallHandler(null);
+      methodChannel = null;
+    }
+
+    if (eventChannel != null) {
+      eventChannel.setStreamHandler(null);
+      eventChannel = null;
+    }
+    flutterJNI.attachToNative();
   }
 
-  private void initializeSariskaMediaTransport(){
+  private void initializeSariskaMediaTransport() {
     SariskaMediaTransport.initializeSdk((Application) applicationContext);
   }
 
-  private void createLocalTracks(Map<String, Object> options){
+  private void createLocalTracks(Map<String, Object> options) {
     Bundle bundle = new Bundle();
     bundle.putBoolean("audio", (Boolean) options.get("audio"));
     bundle.putBoolean("video", (Boolean) options.get("video"));
-    SariskaMediaTransport.createLocalTracks(bundle, tracks ->{
+    SariskaMediaTransport.createLocalTracks(bundle, tracks -> {
       System.out.println("When native side CT work");
       localTracks = tracks;
-      List<Map<String , Object>> localTracks = new ArrayList<>();
-      for (JitsiLocalTrack track : tracks){
-        Map<String , Object> map = new HashMap<>();
+      List<Map<String, Object>> localTracks = new ArrayList<>();
+      for (JitsiLocalTrack track : tracks) {
+        Map<String, Object> map = new HashMap<>();
         map.put("type", track.getType());
         map.put("participantId", track.getParticipantId());
         map.put("deviceId", track.getDeviceId());
@@ -109,7 +128,7 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     });
   }
 
-  private void emit(String action, List<Map<String , Object>> localTracks){
+  private void emit(String action, List<Map<String, Object>> localTracks) {
     handler.post(new Runnable() {
       @Override
       public void run() {

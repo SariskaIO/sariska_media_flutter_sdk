@@ -211,6 +211,9 @@ class _MyAppState extends State<MyApp> {
                               ),
                               buildEndCallButton(
                                 onPressed: () {
+                                  for (JitsiLocalTrack x in localtracks) {
+                                    x.dispose();
+                                  }
                                   localTrack?.dispose();
                                   localtracks.clear();
                                   _conference.leave();

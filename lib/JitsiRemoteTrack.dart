@@ -9,14 +9,14 @@ class JitsiRemoteTrack extends Track {
   ///
   /// The [map] parameter is a map that contains the properties of the remote track.
   JitsiRemoteTrack(Map<dynamic, dynamic> map) : super(map) {
-    this.participantId = map["participantId"];
+    participantId = map["participantId"];
   }
 
   /// Retrieves the ID of the participant associated with this remote track.
   ///
   /// Returns the participant ID as a string.
   String getParticipantId() {
-    return this.participantId;
+    return participantId;
   }
 
   /// Checks if the remote track is local or not.

@@ -26,65 +26,65 @@ class Participant {
   String botType='';
 
   Participant(Map<String, dynamic> map) {
-    this.id = map['id'];
-    this.jid = map['jid'];
-    this.displayName = map['displayName'];
-    this.moderator = map['moderator'];
-    this.hidden = map['hidden'];
-    this.videoMuted = map['videoMuted'];
-    this.audioMuted = map['audioMuted'];
-    this.botType = map['botType'];
-    this.status = map['status'];
-    this.avatar = map['avatar'];
-    this.role = map['role'];
-    this.email = map['email'];
+    id = map['id'];
+    jid = map['jid'];
+    displayName = map['displayName'];
+    moderator = map['moderator'];
+    hidden = map['hidden'];
+    videoMuted = map['videoMuted'];
+    audioMuted = map['audioMuted'];
+    botType = map['botType'];
+    status = map['status'];
+    avatar = map['avatar'];
+    role = map['role'];
+    email = map['email'];
   }
 
   String getId() {
-    return this.id;
+    return id;
   }
 
   String getDisplayName() {
-    return this.displayName;
+    return displayName;
   }
 
   String getRole() {
-    return this.role;
+    return role;
   }
 
   String getJid() {
-    return this.jid;
+    return jid;
   }
 
   String getAvatar() {
-    return this.avatar;
+    return avatar;
   }
 
   bool isModerator() {
-    return this.moderator;
+    return moderator;
   }
 
   bool isHidden() {
-    return this.hidden;
+    return hidden;
   }
 
   String getStatus() {
-    return this.status;
+    return status;
   }
 
   bool isAudioMuted() {
-    return this.audioMuted;
+    return audioMuted;
   }
 
   bool isVideoMuted() {
-    return this.videoMuted;
+    return videoMuted;
   }
 
   String getBotType() {
-    return this.botType;
+    return botType;
   }
 
   String getEmail() {
-    return this.email;
+    return email;
   }
 }
