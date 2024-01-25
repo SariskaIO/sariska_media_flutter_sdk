@@ -4,7 +4,7 @@ import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'JitsiLocalTrack.dart';
 import 'SariskaMediaTransportInterface.dart';
 
-typedef void LocalTrackCallback(List<JitsiLocalTrack> tracks);
+typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
 
 /// A class implementing the SariskaMediaTransportInterface.
 class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface {
@@ -14,8 +14,8 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
 
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  static const methodChannel = const MethodChannel('sariska_media_transport_flutter');
-  static const eventChannel = const EventChannel('sariskaMediaTransportEvent');
+  static const methodChannel = MethodChannel('sariska_media_transport_flutter');
+  static const eventChannel = EventChannel('sariskaMediaTransportEvent');
   static var initialized = false;
 
   @override
@@ -48,7 +48,7 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
             map["muted"]= track["muted"];
             map["streamURL"] = track["streamURL"];
             map["id"]=track["id"];
-            localTracks.add(new JitsiLocalTrack(map));
+            localTracks.add(JitsiLocalTrack(map));
           }
           localTrackCallback(localTracks);
           break;

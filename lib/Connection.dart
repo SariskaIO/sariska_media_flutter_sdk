@@ -16,7 +16,7 @@ class ConnectionBinding<T> {
   ///
   /// The [event] parameter is the name of the connection event.
   /// The [callback] parameter is the callback function to be executed when the event occurs.
-  ConnectionBinding(this.event, T this.callback) {
+  ConnectionBinding(this.event, this.callback) {
     this.event = event;
     this.callback = callback;
   }
