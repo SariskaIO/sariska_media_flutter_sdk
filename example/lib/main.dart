@@ -40,6 +40,7 @@ class _MyAppState extends State<MyApp> {
   String streamURL = '';
   List<JitsiRemoteTrack> remoteTracks = [];
   List<JitsiLocalTrack> localtracks = [];
+  List<Map<String ,String>> lobbyUsers = []; 
   JitsiLocalTrack? localTrack;
   bool isAudioOn = true;
   bool isVideoOn = true;
@@ -303,10 +304,11 @@ class _MyAppState extends State<MyApp> {
           debugPrint("Received Message $message");
         });
 
-        _conference.addEventListener("LOBBY_USER_JOINED", (id, name) {
+        _conference.addEventListener("LOBBY_USER_JOINED", (id, displayName) {
           debugPrint("New User in Lobby");
           debugPrint(id);
-          debugPrint(name);
+          debugPrint(displayName);
+          lobbyUsers.add({'id': id , 'name':displayName});
           setState(() {
             showDialog(
               context: currentContext,
@@ -354,6 +356,7 @@ class _MyAppState extends State<MyApp> {
         });
 
         _conference.addEventListener("CONFERENCE_FAILED", () {
+          debugPrint("Conference Failed call in flutter");
           _conference.joinLobby(_conference.getUserName(), "random_email");
         });
 
