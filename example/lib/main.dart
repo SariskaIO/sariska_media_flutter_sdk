@@ -16,11 +16,13 @@ import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
 
 typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
 const Color themeColor = Color(0xff4050B5);
+    bool hasConferenceFailed = false;
 
 void main() {
   runApp(const MaterialApp(
     home: RoomNamePage(),
     debugShowCheckedModeBanner: true,
+
   ));
 }
 
@@ -355,13 +357,20 @@ class _MyAppState extends State<MyApp> {
           debugPrint("Left User from Lobby");
         });
 
-        _conference.addEventListener("CONFERENCE_FAILED", () {
-          debugPrint("Conference Failed call in flutter");
-          _conference.joinLobby(_conference.getUserName(), "random_email");
-        });
+         _conference.addEventListener("CONFERENCE_FAILED", () {
+        // var count=0 ;
+        if (!hasConferenceFailed) {
+        hasConferenceFailed = true;
+        debugPrint("Conference Failed call in flutter");
+      _conference.joinLobby(_conference.getUserName(), "random_email");
+
+       }
+     });
+
 
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
+            debugPrint('The Remotetrack is: $remoteTrack');
           for (JitsiLocalTrack track in localtracks) {
             if (track.getStreamURL() == remoteTrack.getStreamURL()) {
               return;
