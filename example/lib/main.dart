@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -16,13 +17,11 @@ import 'package:sariska_media_flutter_sdk_example/GenerateToken.dart';
 
 typedef LocalTrackCallback = void Function(List<JitsiLocalTrack> tracks);
 const Color themeColor = Color(0xff4050B5);
-    bool hasConferenceFailed = false;
 
 void main() {
   runApp(const MaterialApp(
     home: RoomNamePage(),
     debugShowCheckedModeBanner: true,
-
   ));
 }
 
@@ -42,7 +41,7 @@ class _MyAppState extends State<MyApp> {
   String streamURL = '';
   List<JitsiRemoteTrack> remoteTracks = [];
   List<JitsiLocalTrack> localtracks = [];
-  List<Map<String ,String>> lobbyUsers = []; 
+  List<Map<String, String>> lobbyUsers = [];
   JitsiLocalTrack? localTrack;
   bool isAudioOn = true;
   bool isVideoOn = true;
@@ -75,6 +74,10 @@ class _MyAppState extends State<MyApp> {
   _getInput() async {
     _currentInput = await FlutterAudioOutput.getCurrentOutput();
   }
+
+  Timer? remoteTrackTimeout;
+  bool hasJoinedLobby = false;
+  bool isLoading = false;
 
   late BuildContext currentContext;
 
@@ -140,6 +143,34 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
             ),
+            if (isLoading)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            'Joining lobby...',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             Positioned(
               bottom: 0,
               left: 0,
@@ -310,7 +341,7 @@ class _MyAppState extends State<MyApp> {
           debugPrint("New User in Lobby");
           debugPrint(id);
           debugPrint(displayName);
-          lobbyUsers.add({'id': id , 'name':displayName});
+          lobbyUsers.add({'id': id, 'name': displayName});
           setState(() {
             showDialog(
               context: currentContext,
@@ -357,20 +388,35 @@ class _MyAppState extends State<MyApp> {
           debugPrint("Left User from Lobby");
         });
 
-         _conference.addEventListener("CONFERENCE_FAILED", () {
-        // var count=0 ;
-        if (!hasConferenceFailed) {
-        hasConferenceFailed = true;
-        debugPrint("Conference Failed call in flutter");
-      _conference.joinLobby(_conference.getUserName(), "random_email");
+        _conference.addEventListener("CONFERENCE_FAILED", () {
+          debugPrint("Conference Failed call in flutter");
+          if (!hasJoinedLobby) {
+            hasJoinedLobby = true;
+            setState(() {
+              isLoading = true;
+            });
 
-       }
-     });
+            _conference.joinLobby(_conference.getUserName(), "random_email");
 
+            remoteTrackTimeout = Timer(const Duration(seconds: 10), () {
+              setState(() {
+                isLoading = false;
+              });
+              for (JitsiLocalTrack x in localtracks) {
+                x.dispose();
+              }
+              localTrack?.dispose();
+              localtracks.clear();
+              _conference.leave();
+              _connection.disconnect();
+              Navigator.pop(currentContext);
+            });
+          }
+        });
 
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
-            debugPrint('The Remotetrack is: $remoteTrack');
+          debugPrint('The Remotetrack is: $remoteTrack');
           for (JitsiLocalTrack track in localtracks) {
             if (track.getStreamURL() == remoteTrack.getStreamURL()) {
               return;
@@ -422,6 +468,12 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       remoteTracks.add(remoteTrack);
     });
+    if (remoteTrackTimeout != null && remoteTrackTimeout!.isActive) {
+      remoteTrackTimeout!.cancel();
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void toggleSpeaker(bool isSpeaker) async {
