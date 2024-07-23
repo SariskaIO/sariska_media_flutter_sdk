@@ -1,4 +1,5 @@
 package io.sariska.sariska_media_flutter_sdk;
+
 import android.os.Bundle;
 import com.facebook.react.bridge.ReadableMap;
 import io.sariska.sdk.Conference;
@@ -13,6 +14,7 @@ import java.util.Map;
 public class ConferenceManager extends Conference {
     private Conference conference;
     private final ConferenceActionEmitter emit;
+
     public ConferenceManager(ConferenceActionEmitter emit) {
         this.emit = emit;
     }
@@ -21,7 +23,7 @@ public class ConferenceManager extends Conference {
         System.out.println("Inside create conference");
         conference = new Conference();
     }
-    
+
     @Override
     public void join() {
         System.out.println("inside conference join");
@@ -35,7 +37,7 @@ public class ConferenceManager extends Conference {
     public void joinLobby(Map<String, ?> params) {
         String displayName = (String) params.get("displayName");
         String email = (String) params.get("email");
-        conference.joinLobby(displayName,email);
+        conference.joinLobby(displayName, email);
     }
 
     public void enableLobby() {
@@ -47,14 +49,14 @@ public class ConferenceManager extends Conference {
         conference.disableLobby();
     }
 
-    public void lobbyDenyAccess(Map<String, ?> params){
+    public void lobbyDenyAccess(Map<String, ?> params) {
         conference.lobbyDenyAccess((String) params.get("participantId"));
     }
 
-    public void lobbyApproveAccess(Map<String, ?> params){
+    public void lobbyApproveAccess(Map<String, ?> params) {
         conference.lobbyApproveAccess((String) params.get("participantId"));
     }
-    
+
     public void grantOwner(Map<String, ?> params) {
         conference.grantOwner((String) params.get("id"));
     }
@@ -249,7 +251,8 @@ public class ConferenceManager extends Conference {
     }
 
     public void setLocalParticipantProperty(Map<String, ?> params) {
-        conference.setLocalParticipantProperty((String) params.get("propertyKey"), (String) params.get("propertyValue"));
+        conference.setLocalParticipantProperty((String) params.get("propertyKey"),
+                (String) params.get("propertyValue"));
     }
 
     public void removeLocalParticipantProperty(Map<String, ?> params) {
@@ -258,6 +261,10 @@ public class ConferenceManager extends Conference {
 
     public void sendFeedback(Map<String, ?> params) {
         conference.sendFeedback((String) params.get("overallFeedback"), (String) params.get("detailedFeedback"));
+    }
+
+    public void removeEventListener(Map<String, ?> params) {
+        conference.removeEventListener((String) params.get("event"));
     }
 
     @Override
@@ -286,9 +293,9 @@ public class ConferenceManager extends Conference {
                 map.put("name", conference.getUserName());
                 map.put("email", conference.getUserEmail());
                 map.put("avatar", conference.getUserAvatar());
-                conference.addEventListener(eventString, ()->{
+                conference.addEventListener(eventString, () -> {
                     emit.emit(eventString, map);
-            });
+                });
                 break;
             case "DOMINANT_SPEAKER_CHANGED":
                 // Handle dominant speaker changed event
@@ -301,7 +308,7 @@ public class ConferenceManager extends Conference {
                     trackMap.put("type", ((JitsiRemoteTrack) p).getType());
                     trackMap.put("participantId", ((JitsiRemoteTrack) p).getParticipantId());
                     trackMap.put("id", ((JitsiRemoteTrack) p).getId());
-                    trackMap.put("muted",((JitsiRemoteTrack) p).isMuted());
+                    trackMap.put("muted", ((JitsiRemoteTrack) p).isMuted());
                     trackMap.put("streamURL", ((JitsiRemoteTrack) p).getStreamURL());
                     emit.emit((String) event.get("event"), trackMap);
                 });
@@ -314,7 +321,7 @@ public class ConferenceManager extends Conference {
                     trackMap.put("type", ((JitsiRemoteTrack) p).getType());
                     trackMap.put("participantId", ((JitsiRemoteTrack) p).getParticipantId());
                     trackMap.put("id", ((JitsiRemoteTrack) p).getId());
-                    trackMap.put("muted",((JitsiRemoteTrack) p).isMuted());
+                    trackMap.put("muted", ((JitsiRemoteTrack) p).isMuted());
                     trackMap.put("streamURL", ((JitsiRemoteTrack) p).getStreamURL());
                     emit.emit((String) event.get("event"), trackMap);
                 });
@@ -344,14 +351,21 @@ public class ConferenceManager extends Conference {
             case "CONFERENCE_LEFT":
                 // Handle conference left event
                 // Do nothing for now
-                conference.addEventListener(eventString, ()->{
-                   emit.emit((String) event.get("event"), new HashMap<>());
+                conference.addEventListener(eventString, () -> {
+                    emit.emit((String) event.get("event"), new HashMap<>());
                 });
                 break;
             case "CONFERENCE_FAILED":
-                // Handle conference failed case
+                System.out.println("Conference Called in Java: ");
+                conference.addEventListener(eventString, () -> {
+                    // System.out.println("Java Event: " + eventString);
+                    // System.out.println("Java Data: " + data.toString());
+                    // Further processing if needed
+                    // Map<String, Object> errorMap = new HashMap<>();
+                    // errorMap.put("error", data);
+                    emit.emit((String) event.get("event"), new HashMap<>());
+                });
                 break;
-
             case "CONFERENCE_ERROR":
                 // Handle conference error case
                 break;
@@ -394,11 +408,11 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "LOBBY_USER_LEFT":
-            conference.addEventListener(eventString, (id) -> {
-                Map<String, Object> participantMap = new HashMap<>();
-                participantMap.put("id", id);
-                emit.emit((String) event.get("event"), participantMap);
-            });
+                conference.addEventListener(eventString, (id) -> {
+                    Map<String, Object> participantMap = new HashMap<>();
+                    participantMap.put("id", id);
+                    emit.emit((String) event.get("event"), participantMap);
+                });
                 break;
 
             case "MEMBERS_ONLY_CHANGED":
@@ -431,7 +445,7 @@ public class ConferenceManager extends Conference {
                     participantMap.put("id", id);
                     participantMap.put("role", role);
                     emit.emit((String) event.get("event"), participantMap);
-                });   
+                });
                 break;
             case "USER_STATUS_CHANGED":
                 // Handle user status changed case
@@ -450,7 +464,7 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "ENDPOINT_MESSAGE_RECEIVED":
-                
+
                 break;
 
             case "REMOTE_STATS_UPDATED":
@@ -462,30 +476,30 @@ public class ConferenceManager extends Conference {
                 break;
 
             case "LOBBY_USER_JOINED":
-            conference.addEventListener(eventString, (id, name) -> {
-                Map<String, Object> participantMap = new HashMap<>();
-                participantMap.put("id", id);
-                participantMap.put("displayName", name);
-                emit.emit((String) event.get("event"), participantMap);
-            });
+                conference.addEventListener(eventString, (id, name) -> {
+                    Map<String, Object> participantMap = new HashMap<>();
+                    participantMap.put("id", id);
+                    participantMap.put("displayName", name);
+                    emit.emit((String) event.get("event"), participantMap);
+                });
                 break;
             case "LOBBY_USER_UPDATED":
-            conference.addEventListener(eventString, (id, participant) -> {
-                Participant participant1 = (Participant) participant;
-                Map<String, Object> participantMap = new HashMap<>();
-                participantMap.put("id", participant1.getId());
-                participantMap.put("displayName", participant1.getDisplayName());
-                emit.emit((String) event.get("event"), participantMap);
-            });
+                conference.addEventListener(eventString, (id, participant) -> {
+                    Participant participant1 = (Participant) participant;
+                    Map<String, Object> participantMap = new HashMap<>();
+                    participantMap.put("id", participant1.getId());
+                    participantMap.put("displayName", participant1.getDisplayName());
+                    emit.emit((String) event.get("event"), participantMap);
+                });
                 break;
 
             case "MESSAGE_RECEIVED":
-            conference.addEventListener(eventString, (senderId, message) -> {
-                Map<String, Object> participantMap = new HashMap<>();
-                participantMap.put("message", message);
-                participantMap.put("senderId", senderId);
-                emit.emit((String) event.get("event"), participantMap);
-            });
+                conference.addEventListener(eventString, (senderId, message) -> {
+                    Map<String, Object> participantMap = new HashMap<>();
+                    participantMap.put("message", message);
+                    participantMap.put("senderId", senderId);
+                    emit.emit((String) event.get("event"), participantMap);
+                });
                 break;
 
             case "RECORDER_STATE_CHANGED":
@@ -504,7 +518,6 @@ public class ConferenceManager extends Conference {
                 break;
         }
     }
-
 
     @Override
     public void newConferenceMessage(String action, ReadableMap m) {

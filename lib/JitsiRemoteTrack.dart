@@ -25,4 +25,5 @@ class JitsiRemoteTrack extends Track {
   bool isLocal() {
     return false;
   }
+
 }

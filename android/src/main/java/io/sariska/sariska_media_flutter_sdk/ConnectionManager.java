@@ -24,14 +24,14 @@ public class ConnectionManager extends Connection {
 
     public void createConnection(Map<String, Object> map) {
         connection = new Connection((String) map.get("token"),
-                (String)map.get("roomName"), false);
+                (String) map.get("roomName"), false);
     }
 
     public void addConnectionListeners(HashMap<String, Object> event) {
         System.out.println((String) event.get("event"));
-            connection.addEventListener((String) event.get("event"), ()->{
-                emit.emit((String) event.get("event"));
-            });
+        connection.addEventListener((String) event.get("event"), () -> {
+            emit.emit((String) event.get("event"));
+        });
     }
 
     public void destroy() {

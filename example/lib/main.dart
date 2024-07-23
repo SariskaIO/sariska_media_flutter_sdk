@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class _MyAppState extends State<MyApp> {
   String streamURL = '';
   List<JitsiRemoteTrack> remoteTracks = [];
   List<JitsiLocalTrack> localtracks = [];
+  List<Map<String, String>> lobbyUsers = [];
   JitsiLocalTrack? localTrack;
   bool isAudioOn = true;
   bool isVideoOn = true;
@@ -52,6 +54,12 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
     init();
+  }
+
+  @override
+  void dispose() {
+    _timer!.cancel();
+    super.dispose();
   }
 
   late AudioInput _currentInput = const AudioInput("unknown", 0);
@@ -73,7 +81,42 @@ class _MyAppState extends State<MyApp> {
     _currentInput = await FlutterAudioOutput.getCurrentOutput();
   }
 
+  Timer? _timer;
+  bool hasJoinedLobby = false;
+  bool isLoading = false;
+  bool flag = false;
+
   late BuildContext currentContext;
+
+  void startLobbyTimeout() {
+    _timer = Timer(const Duration(seconds: 7), () {
+      setState(() {
+        isLoading = false;
+      });
+
+      if (flag) return;
+
+      for (JitsiLocalTrack x in localtracks) {
+        x.dispose();
+      }
+      localTrack?.dispose();
+      localtracks.clear();
+
+      _conference.leave();
+      _connection.disconnect();
+      _conference.removeEventListener("CONFERENCE_FAILED");
+      _conference.removeEventListener("TRACK_ADDED");
+      _conference.removeEventListener("CONFERENCE_JOINED");
+      _conference.removeEventListener("USER_ROLE_CHANGED");
+      _conference.removeEventListener("MESSAGE_RECEIVED");
+      _conference.removeEventListener("LOBBY_USER_JOINED");
+      _connection.removeEventListener("CONNECTION_ESTABLISHED");
+      _connection.removeEventListener("CONNECTION_FAILED");
+      _connection.removeEventListener("CONNECTION_FAILED");
+
+      Navigator.pop(currentContext);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +180,34 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
             ),
+            if (isLoading)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            'Joining lobby...',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             Positioned(
               bottom: 0,
               left: 0,
@@ -218,6 +289,24 @@ class _MyAppState extends State<MyApp> {
                                   localtracks.clear();
                                   _conference.leave();
                                   _connection.disconnect();
+                                  _conference
+                                      .removeEventListener("CONFERENCE_FAILED");
+                                  _conference
+                                      .removeEventListener("TRACK_ADDED");
+                                  _conference
+                                      .removeEventListener("CONFERENCE_JOINED");
+                                  _conference
+                                      .removeEventListener("USER_ROLE_CHANGED");
+                                  _conference
+                                      .removeEventListener("MESSAGE_RECEIVED");
+                                  _conference
+                                      .removeEventListener("LOBBY_USER_JOINED");
+                                  _connection.removeEventListener(
+                                      "CONNECTION_ESTABLISHED");
+                                  _connection
+                                      .removeEventListener("CONNECTION_FAILED");
+                                  _connection
+                                      .removeEventListener("CONNECTION_FAILED");
                                   Navigator.pop(context);
                                 },
                               ),
@@ -303,10 +392,11 @@ class _MyAppState extends State<MyApp> {
           debugPrint("Received Message $message");
         });
 
-        _conference.addEventListener("LOBBY_USER_JOINED", (id, name) {
+        _conference.addEventListener("LOBBY_USER_JOINED", (id, displayName) {
           debugPrint("New User in Lobby");
           debugPrint(id);
-          debugPrint(name);
+          debugPrint(displayName);
+          lobbyUsers.add({'id': id, 'name': displayName});
           setState(() {
             showDialog(
               context: currentContext,
@@ -346,19 +436,25 @@ class _MyAppState extends State<MyApp> {
           });
         });
 
-        _conference.addEventListener(
-            "LOBBY_USER_UPDATED", (id, participant) {});
-
         _conference.addEventListener("LOBBY_USER_LEFT", (id) {
           debugPrint("Left User from Lobby");
         });
 
         _conference.addEventListener("CONFERENCE_FAILED", () {
-          _conference.joinLobby(_conference.getUserName(), "random_email");
+          debugPrint("Conference Failed call in flutter");
+          if (!hasJoinedLobby) {
+            hasJoinedLobby = true;
+            setState(() {
+              isLoading = true;
+            });
+            startLobbyTimeout();
+            _conference.joinLobby(_conference.getUserName(), "random_email");
+          }
         });
 
         _conference.addEventListener("TRACK_ADDED", (track) {
           JitsiRemoteTrack remoteTrack = track;
+          debugPrint('The Remotetrack is: $remoteTrack');
           for (JitsiLocalTrack track in localtracks) {
             if (track.getStreamURL() == remoteTrack.getStreamURL()) {
               return;
@@ -410,6 +506,13 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       remoteTracks.add(remoteTrack);
     });
+    if (_timer!.isActive) {
+      _timer!.cancel();
+      setState(() {
+        isLoading = false;
+      });
+    }
+    flag = true;
   }
 
   void toggleSpeaker(bool isSpeaker) async {

@@ -73,6 +73,9 @@ class Conference {
           switch (action) {
             case "CONFERENCE_LEFT":
             case "CONFERENCE_FAILED":
+              print("Flutter CONFERENCE FAILED: ");
+              (_bindings[i].getCallback() as ConferenceCallbackParam0)();
+              break;
             case "CONFERENCE_ERROR":
             case "BEFORE_STATISTICS_DISPOSED":
             case "TALK_WHILE_MUTED":
@@ -80,11 +83,11 @@ class Conference {
             case "AUDIO_INPUT_STATE_CHANGE":
             case "LOBBY_USER_JOINED":
               (_bindings[i].getCallback() as ConferenceCallbackParam2)(
-                  m["id"], m["participant"]);
+                  m["id"], m["displayName"]);
               break;
             case "LOBBY_USER_UPDATED":
               (_bindings[i].getCallback() as ConferenceCallbackParam2)(
-                  m["id"], m["participant"]);
+                  m["id"], m["displayName"]);
               break;
             case "NOISY_MIC":
               (_bindings[i].getCallback() as ConferenceCallbackParam0)();
@@ -437,7 +440,11 @@ class Conference {
     _invokeMethod('addEventListeners', arguments);
   }
 
-  void removeEventListener(event) {
+  void removeEventListener(String event) {
     _bindings = _bindings.where((binding) => binding.event != event).toList();
+    Map<String, dynamic> arguments = {
+      'event': event,
+    };
+    _invokeMethod('removeEventListener', arguments);
   }
 }
