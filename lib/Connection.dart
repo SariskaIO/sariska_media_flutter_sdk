@@ -117,7 +117,10 @@ class Connection {
   /// The [event] parameter is the name of the event to remove.
   void removeEventListener(String event) {
     _bindings = _bindings.where((binding) => binding.event != event).toList();
-    _invokeMethod('removeConnectionListeners');
+    Map<String, dynamic> arguments = {
+      'event': event,
+    };
+    _invokeMethod('removeConnectionListeners', arguments);
   }
 
   /// Retrieves the name of the connection.
