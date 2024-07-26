@@ -405,6 +405,16 @@ public class ConferenceManager extends Conference {
                 break;
             case "TRACK_MUTE_CHANGED":
                 // Handle track mute changed case
+                conference.addEventListener(eventString, (p) -> {
+                    JitsiRemoteTrack track = (JitsiRemoteTrack) p;
+                    Map<String, Object> trackMap = new HashMap<>();
+                    trackMap.put("type", ((JitsiRemoteTrack) p).getType());
+                    trackMap.put("participantId", ((JitsiRemoteTrack) p).getParticipantId());
+                    trackMap.put("id", ((JitsiRemoteTrack) p).getId());
+                    trackMap.put("muted", ((JitsiRemoteTrack) p).isMuted());
+                    trackMap.put("streamURL", ((JitsiRemoteTrack) p).getStreamURL());
+                    emit.emit((String) event.get("event"), trackMap);
+                });
                 break;
 
             case "LOBBY_USER_LEFT":

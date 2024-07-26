@@ -379,6 +379,10 @@ class _MyAppState extends State<MyApp> {
           }
         });
 
+        _conference.addEventListener("TRACK_MUTE_CHANGED", (track) {
+          debugPrint("TRACK_MUTE_CHANGED Event called");
+        });
+
         _conference.addEventListener("USER_ROLE_CHANGED", (id, newRole) {
           debugPrint("User Role changed");
           String role = newRole.toString().toLowerCase();
