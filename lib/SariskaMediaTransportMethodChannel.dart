@@ -20,44 +20,55 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
+    try {
+      final version =
+          await methodChannel.invokeMethod<String>('getPlatformVersion');
+      return version;
+    } on PlatformException catch (e) {
+      print('Failed to get platform version: ${e.message}');
+      return null;
+    }
   }
 
   /// Initializes the Sariska Media Transport SDK.
   @override
   void initializeSdk() {
-    if(initialized == false){
-      _invokeMethod('initializeSdk');
-      initialized = true;
-    }
-    eventChannel.receiveBroadcastStream().listen((event) {
-      print('Inside SMT receive broadcast stream');
-      final action = event['action'] as String;
-      print(action);
-      final m = event['m'] as List<dynamic>;
-      print(m);
-      switch (action) {
-        case "CREATE_LOCAL_TRACKS":
-          localTracks = [];
-          for (dynamic track in m) {
-            Map<String, Object> map = new Map();
-            map["type"] = track["type"];
-            map["participantId"] = track["participantId"];
-            map["deviceId"] =track["deviceId"];
-            map["muted"]= track["muted"];
-            map["streamURL"] = track["streamURL"];
-            map["id"]=track["id"];
-            localTracks.add(JitsiLocalTrack(map));
-          }
-          localTrackCallback(localTracks);
-          break;
-        default:
+    try {
+      if (initialized == false) {
+        _invokeMethod('initializeSdk');
+        initialized = true;
       }
-    });
+      eventChannel.receiveBroadcastStream().listen((event) {
+        print('Inside SMT receive broadcast stream');
+        final action = event['action'] as String;
+        print(action);
+        final m = event['m'] as List<dynamic>;
+        print(m);
+        switch (action) {
+          case "CREATE_LOCAL_TRACKS":
+            localTracks = [];
+            for (dynamic track in m) {
+              Map<String, Object> map = new Map();
+              map["type"] = track["type"];
+              map["participantId"] = track["participantId"];
+              map["deviceId"] = track["deviceId"];
+              map["muted"] = track["muted"];
+              map["streamURL"] = track["streamURL"];
+              map["id"] = track["id"];
+              localTracks.add(JitsiLocalTrack(map));
+            }
+            localTrackCallback(localTracks);
+            break;
+          default:
+        }
+      });
+    } on MissingPluginException catch (e) {
+      print('Failed to initialize SDK: ${e.message}');
+    }
   }
 
-  static Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
+  static Future<T?> _invokeMethod<T>(String method,
+      [Map<String, dynamic>? arguments]) {
     return methodChannel.invokeMethod(method, arguments);
   }
 
@@ -65,10 +76,8 @@ class SariskaMediaTransportMethodChannel extends SariskaMediaTransportInterface 
   @override
   void createLocalTracks(Map<String, dynamic> options, LocalTrackCallback callback) {
     localTrackCallback = callback;
-    _invokeMethod('createLocalTracks', {
-      'audio': options['audio'],
-      'video': options['video']
-    });
+    _invokeMethod('createLocalTracks',
+        {'audio': options['audio'], 'video': options['video']});
   }
 
   @override

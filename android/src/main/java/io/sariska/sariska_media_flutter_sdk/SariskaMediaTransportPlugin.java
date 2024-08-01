@@ -83,8 +83,6 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
     }
     if (call.method.equals("getPlatformVersion")) {
       result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
     }
   }
 

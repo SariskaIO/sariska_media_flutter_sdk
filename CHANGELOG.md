@@ -1,3 +1,9 @@
+## 0.2.3
+* Bug fix: platform version, initialize SDK
+
+## 0.2.2
+* Event disposal.
+
 ## 0.2.1
 * Bug fix: JNI Engine issue
 
