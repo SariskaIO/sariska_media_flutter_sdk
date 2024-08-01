@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:sariska_media_flutter_sdk/Connection.dart';
 import 'JitsiLocalTrack.dart';
@@ -26,13 +27,23 @@ abstract class SariskaMediaTransportInterface extends PlatformInterface {
   }
 
   /// Retrieves the platform version.
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('getPlatformVersion() has not been implemented.');
+  Future<String?> getPlatformVersion() async {
+    const platform = MethodChannel('samples.flutter.dev/platform');
+    try {
+      final String? version = await platform.invokeMethod('getPlatformVersion');
+      print("Platform Version: $version");
+      return version;
+    } on PlatformException catch (e) {
+      print("Failed to get platform version: '${e.message}'.");
+      return null;
+    }
   }
 
   /// Initializes the Sariska Media SDK.
   void initializeSdk() {
-    throw UnimplementedError('initializeSdk() has not been implemented.');
+    try {} on MissingPluginException catch (e) {
+      print("Failed to initialize SDK: '${e.message}'.");
+    }
   }
 
   /// Creates local tracks based on the provided options.
