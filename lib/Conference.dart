@@ -74,7 +74,8 @@ class Conference {
             case "CONFERENCE_LEFT":
             case "CONFERENCE_FAILED":
               print("Flutter CONFERENCE FAILED: ");
-              (_bindings[i].getCallback() as ConferenceCallbackParam0)();
+              (_bindings[i].getCallback()
+                  as ConferenceCallbackParam1)(m["error"]);
               break;
             case "CONFERENCE_ERROR":
             case "BEFORE_STATISTICS_DISPOSED":

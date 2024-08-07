@@ -59,9 +59,14 @@ class Connection {
         if (_bindings[i].getEvent() == action) {
           switch (action) {
             case "CONNECTION_ESTABLISHED":
+              _bindings[i].getCallback()();
+              break;
             case "CONNECTION_FAILED":
+              _bindings[i].getCallback()();
+              break;
             case "CONNECTION_DISCONNECTED":
               _bindings[i].getCallback()();
+              break;
           }
         }
       }

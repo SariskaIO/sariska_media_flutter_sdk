@@ -357,13 +357,10 @@ public class ConferenceManager extends Conference {
                 break;
             case "CONFERENCE_FAILED":
                 System.out.println("Conference Called in Java: ");
-                conference.addEventListener(eventString, () -> {
-                    // System.out.println("Java Event: " + eventString);
-                    // System.out.println("Java Data: " + data.toString());
-                    // Further processing if needed
-                    // Map<String, Object> errorMap = new HashMap<>();
-                    // errorMap.put("error", data);
-                    emit.emit((String) event.get("event"), new HashMap<>());
+                conference.addEventListener(eventString, (error) -> {
+                    Map<String, Object> errorMap = new HashMap<>();
+                    errorMap.put("error", error);
+                    emit.emit((String) event.get("event"), errorMap);
                 });
                 break;
             case "CONFERENCE_ERROR":
