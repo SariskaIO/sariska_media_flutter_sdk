@@ -444,15 +444,15 @@ class _MyAppState extends State<MyApp> {
           debugPrint("Left User from Lobby");
         });
 
-        _conference.addEventListener("CONFERENCE_FAILED", () {
+        _conference.addEventListener("CONFERENCE_FAILED", (error) {
           debugPrint("Conference Failed call in flutter");
-          if (!hasJoinedLobby) {
-            hasJoinedLobby = true;
-            setState(() {
-              isLoading = true;
-            });
-            startLobbyTimeout();
+          if (error == "conference.connectionError.membersOnly") {
+            debugPrint("if condition is true for members only");
             _conference.joinLobby(_conference.getUserName(), "random_email");
+          }
+          if (error == "conference.connectionError.accessDenied") {
+            debugPrint("if condition is true for access denied");
+            Navigator.pop(context);
           }
         });
 
