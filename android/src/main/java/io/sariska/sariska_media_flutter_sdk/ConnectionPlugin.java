@@ -44,8 +44,24 @@ public class ConnectionPlugin implements MethodChannel.MethodCallHandler, EventC
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
-        if(manager == null){
-            manager = new ConnectionManager(action -> emit(action), map);
+        if (manager == null) {
+            manager = new ConnectionManager(new ActionEmitter() {
+                @Override
+                public void emit(String action, Map<String, Object> m) {
+                    // Implementation for emitting action and map
+                    // You can define your own logic here
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Map<String, Object> event = new HashMap<>();
+                            event.put("action", action);
+                            event.put("m", m);
+                            eventSink.success(event);
+                        }
+                    });
+                }
+            }, map);
+
         }
         Method[] methods = manager.getClass().getDeclaredMethods();
         for (Method method : methods) {
@@ -66,7 +82,7 @@ public class ConnectionPlugin implements MethodChannel.MethodCallHandler, EventC
 
     }
 
-    private void emit(String action){
+    private void emit(String action) {
         handler.post(new Runnable() {
             @Override
             public void run() {

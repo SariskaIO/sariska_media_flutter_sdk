@@ -58,7 +58,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    _timer!.cancel();
     super.dispose();
   }
 
@@ -81,42 +80,7 @@ class _MyAppState extends State<MyApp> {
     _currentInput = await FlutterAudioOutput.getCurrentOutput();
   }
 
-  Timer? _timer;
-  bool hasJoinedLobby = false;
-  bool isLoading = false;
-  bool flag = false;
-
   late BuildContext currentContext;
-
-  void startLobbyTimeout() {
-    _timer = Timer(const Duration(seconds: 7), () {
-      setState(() {
-        isLoading = false;
-      });
-
-      if (flag) return;
-
-      for (JitsiLocalTrack x in localtracks) {
-        x.dispose();
-      }
-      localTrack?.dispose();
-      localtracks.clear();
-
-      _conference.leave();
-      _connection.disconnect();
-      _conference.removeEventListener("CONFERENCE_FAILED");
-      _conference.removeEventListener("TRACK_ADDED");
-      _conference.removeEventListener("CONFERENCE_JOINED");
-      _conference.removeEventListener("USER_ROLE_CHANGED");
-      _conference.removeEventListener("MESSAGE_RECEIVED");
-      _conference.removeEventListener("LOBBY_USER_JOINED");
-      _connection.removeEventListener("CONNECTION_ESTABLISHED");
-      _connection.removeEventListener("CONNECTION_FAILED");
-      _connection.removeEventListener("CONNECTION_FAILED");
-
-      Navigator.pop(currentContext);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,34 +144,6 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
             ),
-            if (isLoading)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.5),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Text(
-                            'Joining lobby...',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             Positioned(
               bottom: 0,
               left: 0,
@@ -370,8 +306,12 @@ class _MyAppState extends State<MyApp> {
 
       _connection = Connection(token, widget.roomName, false);
 
+      _connection.connect();
+
       _connection.addEventListener("CONNECTION_ESTABLISHED", () {
         _conference = _connection.initJitsiConference();
+        _conference.join();
+
         _conference.addEventListener("CONFERENCE_JOINED", () {
           for (JitsiLocalTrack track in localtracks) {
             debugPrint("Local Track Added");
@@ -470,18 +410,15 @@ class _MyAppState extends State<MyApp> {
           streamURL = remoteTrack.getStreamURL();
           replaceChild(remoteTrack);
         });
-        _conference.join();
       });
 
-      _connection.addEventListener("CONNECTION_FAILED", () {
-        print("Connection Failed");
+      _connection.addEventListener("CONNECTION_FAILED", (error) {
+        debugPrint("Connection Failed flutter: $error");
       });
 
-      _connection.addEventListener("CONNECTION_DISCONNECTED", () {
-        print("Connection Disconnected");
+      _connection.addEventListener("CONNECTION_DISCONNECTED", (error) {
+        debugPrint("Connection Disconnected flutter: $error");
       });
-
-      _connection.connect();
 
       setState(() {});
     } on PlatformException {
@@ -510,13 +447,6 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       remoteTracks.add(remoteTrack);
     });
-    if (_timer!.isActive) {
-      _timer!.cancel();
-      setState(() {
-        isLoading = false;
-      });
-    }
-    flag = true;
   }
 
   void toggleSpeaker(bool isSpeaker) async {

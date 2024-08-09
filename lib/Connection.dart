@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'Conference.dart';
 
-typedef ConnectionCallback = void Function();
+typedef ConnectionCallback = dynamic Function();
 
 /// A binding between a connection event and its callback.
 class ConnectionBinding<T> {
@@ -36,6 +36,9 @@ class ConnectionBinding<T> {
   }
 }
 
+/// Signature for a Connection callback with one parameter.
+typedef ConnectionCallbackParam1<W> = void Function(W w);
+
 /// Represents a connection to a conference.
 class Connection {
   static List<ConnectionBinding> _bindings = [];
@@ -55,17 +58,28 @@ class Connection {
       print('Received Broadcast Stream');
       final eventMap = Map<String, dynamic>.from(event);
       final action = eventMap['action'] as String;
+      final m = Map<String, dynamic>.from(eventMap['m']);
       for (var i = 0; i < _bindings.length; i++) {
         if (_bindings[i].getEvent() == action) {
           switch (action) {
             case "CONNECTION_ESTABLISHED":
+              print("CONNECTION_ESTABLISHED");
               _bindings[i].getCallback()();
               break;
             case "CONNECTION_FAILED":
-              _bindings[i].getCallback()();
+              print("CONNECTION_FAILED");
+              (_bindings[i].getCallback()
+                  as ConnectionCallbackParam1)(m["error"]);
               break;
             case "CONNECTION_DISCONNECTED":
-              _bindings[i].getCallback()();
+              print("CONNECTION_DISCONNECTED");
+              (_bindings[i].getCallback()
+                  as ConnectionCallbackParam1)(m["error"]);
+              break;
+            case "PASSWORD_REQUIRED":
+              print("PASSWORD_REQUIRED");
+              (_bindings[i].getCallback()
+                  as ConnectionCallbackParam1)(m["error"]);
               break;
           }
         }
@@ -109,7 +123,7 @@ class Connection {
   ///
   /// The [event] parameter is the name of the event to listen for.
   /// The [callback] parameter is the callback function to be executed when the event occurs.
-  void addEventListener(String event, ConnectionCallback callback) {
+  void addEventListener(String event, dynamic callback) {
     _bindings.add(ConnectionBinding(event, callback));
     Map<String, dynamic> arguments = {
       'event': event,

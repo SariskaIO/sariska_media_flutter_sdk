@@ -61,7 +61,7 @@ public class ConferencePlugin implements MethodChannel.MethodCallHandler, EventC
                    });
                }
            });
-       }
+        }
         Method[] methods = conferenceManager.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.getName().equals(call.method)) {

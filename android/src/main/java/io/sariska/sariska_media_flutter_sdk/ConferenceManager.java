@@ -285,7 +285,6 @@ public class ConferenceManager extends Conference {
         switch (eventString) {
             case "CONFERENCE_JOINED":
                 Map<String, Object> map = new HashMap<>();
-                System.out.println("USer ID: " + conference.getUserId());
                 map.put("userId", conference.getUserId());
                 map.put("role", conference.getUserRole());
                 map.put("hidden", conference.isHidden());
@@ -301,8 +300,10 @@ public class ConferenceManager extends Conference {
                 // Handle dominant speaker changed event
                 break;
             case "TRACK_ADDED":
+                System.out.println("Track Added event called in java");
                 // Handle track added event
                 conference.addEventListener(eventString, (p) -> {
+                    System.out.println("Track Added event called inside add listener java");
                     JitsiRemoteTrack track = (JitsiRemoteTrack) p;
                     Map<String, Object> trackMap = new HashMap<>();
                     trackMap.put("type", ((JitsiRemoteTrack) p).getType());
@@ -356,7 +357,7 @@ public class ConferenceManager extends Conference {
                 });
                 break;
             case "CONFERENCE_FAILED":
-                System.out.println("Conference Called in Java: ");
+                System.out.println("Conference failed Called in Java: ");
                 conference.addEventListener(eventString, (error) -> {
                     Map<String, Object> errorMap = new HashMap<>();
                     errorMap.put("error", error);
