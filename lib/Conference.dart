@@ -247,12 +247,8 @@ class Conference {
     return userId;
   }
 
-  void join([String password = '']) {
-    if (password != '') {
-      _invokeMethod('join', {'password': password});
-    } else {
-      _invokeMethod('join');
-    }
+  void join() {
+    _invokeMethod('join');
   }
 
   void grantOwner(String id) {

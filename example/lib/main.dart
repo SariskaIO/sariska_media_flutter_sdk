@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +60,6 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  late AudioInput _currentInput = const AudioInput("unknown", 0);
   bool isSpeakerOn = false;
   bool isCameraSwitch = false;
 
@@ -76,9 +74,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {});
   }
 
-  _getInput() async {
-    _currentInput = await FlutterAudioOutput.getCurrentOutput();
-  }
+  _getInput() async {}
 
   late BuildContext currentContext;
 
@@ -330,10 +326,6 @@ class _MyAppState extends State<MyApp> {
             debugPrint("Enable Lobby Called");
             _conference.enableLobby();
           }
-        });
-
-        _conference.addEventListener("MESSAGE_RECEIVED", (senderId, message) {
-          debugPrint("Received Message $message");
         });
 
         _conference.addEventListener("LOBBY_USER_JOINED", (id, displayName) {

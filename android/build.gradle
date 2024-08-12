@@ -37,7 +37,7 @@ android {
     }
 
     dependencies {
-        api 'io.sariska:sariska-media-transport:5.5.3'
+        api 'io.sariska:sariska-media-transport:5.5.4'
         testImplementation 'junit:junit:4.13.2'
         testImplementation 'org.mockito:mockito-core:5.0.0'
     }

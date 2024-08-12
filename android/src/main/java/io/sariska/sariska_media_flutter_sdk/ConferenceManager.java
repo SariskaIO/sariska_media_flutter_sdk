@@ -302,7 +302,7 @@ public class ConferenceManager extends Conference {
             case "TRACK_ADDED":
                 System.out.println("Track Added event called in java");
                 // Handle track added event
-                conference.addEventListener(eventString, (p) -> {
+                conference.addEventListener((String) event.get("event"), (p) -> {
                     System.out.println("Track Added event called inside add listener java");
                     JitsiRemoteTrack track = (JitsiRemoteTrack) p;
                     Map<String, Object> trackMap = new HashMap<>();
