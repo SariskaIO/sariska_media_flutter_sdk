@@ -97,7 +97,7 @@ public class SariskaMediaTransportPlugin implements FlutterPlugin, MethodCallHan
       eventChannel.setStreamHandler(null);
       eventChannel = null;
     }
-    flutterJNI.attachToNative();
+    flutterJNI.detachFromNativeAndReleaseResources();
   }
 
   private void initializeSariskaMediaTransport() {
